@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Pax Alterna — Альтернативная история</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#1a1a2e; color:#fff; overflow-x:hidden; touch-action:manipulation; }
+button { cursor:pointer; border:none; font-family:inherit; }
+input,textarea,select { font-family:inherit; }
+
+/* SCREENS */
+.screen { display:none; min-height:100vh; }
+.screen.active { display:flex; }
+
+/* MENU */
+#menu { flex-direction:column; align-items:center; justify-content:center; padding:1.5rem; }
+#menu h1 { font-size:2.5rem; color:#f59e0b; margin-bottom:0.3rem; }
+#menu .sub { color:#9ca3af; margin-bottom:2rem; font-size:1rem; }
+.preset-card { width:100%; max-width:500px; background:#1f2937; border:1px solid #374151; border-radius:12px; padding:1rem; margin-bottom:0.8rem; text-align:left; color:#fff; }
+.preset-card.selected { border-color:#f59e0b; background:#292524; }
+.preset-card h3 { font-size:1rem; margin-bottom:0.3rem; }
+.preset-card p { font-size:0.8rem; color:#9ca3af; }
+.country-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%; max-width:500px; margin:1rem 0; }
+.country-btn { background:#1f2937; border:2px solid #374151; border-radius:10px; padding:0.8rem; text-align:left; color:#fff; }
+.country-btn.selected { border-color:#fff; }
+.country-btn .dot { width:14px; height:14px; border-radius:50%; display:inline-block; margin-right:6px; vertical-align:middle; }
+.country-btn .name { font-size:0.85rem; font-weight:600; }
+.country-btn .leader { font-size:0.7rem; color:#6b7280; margin-top:2px; }
+.stat-row { display:flex; align-items:center; gap:4px; margin-top:3px; }
+.stat-row .lbl { font-size:9px; color:#6b7280; width:50px; }
+.stat-row .bar { flex:1; height:4px; background:#374151; border-radius:2px; }
+.stat-row .bar .fill { height:100%; border-radius:2px; background:#3b82f6; }
+.start-btn { width:100%; max-width:500px; background:#d97706; color:#fff; padding:0.9rem; border-radius:10px; font-size:1.1rem; font-weight:700; margin-top:0.5rem; }
+.start-btn:active { background:#b45309; }
+
+/* SAVED */
+.saved-list { width:100%; max-width:500px; }
+.saved-item { display:flex; align-items:center; gap:0.6rem; background:#1f2937; border:1px solid #374151; border-radius:10px; padding:0.8rem; margin-bottom:0.5rem; }
+.saved-item .info { flex:1; }
+.saved-item .info .title { font-size:0.85rem; }
+.saved-item .info .meta { font-size:0.7rem; color:#6b7280; }
+.saved-item .play-btn { background:#3b82f6; color:#fff; padding:6px 14px; border-radius:8px; font-size:0.75rem; }
+.saved-item .del-btn { color:#ef4444; font-size:0.75rem; background:none; padding:6px; }
+.tabs { display:flex; gap:0.5rem; width:100%; max-width:500px; margin-bottom:1rem; }
+.tabs button { flex:1; padding:0.6rem; border-radius:8px; font-size:0.85rem; font-weight:500; }
+.tabs .tab-active { background:#d97706; color:#fff; }
+.tabs .tab-inactive { background:#1f2937; color:#9ca3af; }
+
+/* GAME SCREEN */
+#game { flex-direction:column; position:relative; }
+.top-bar { position:fixed; top:0; left:0; right:0; height:50px; background:rgba(17,24,39,0.92); border-bottom:1px solid #374151; display:flex; align-items:center; padding:0 12px; z-index:100; backdrop-filter:blur(6px); }
+.top-bar .flag { width:30px; height:30px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); margin-right:8px; }
+.top-bar .cname { font-size:0.85rem; font-weight:700; }
+.top-bar .cleader { font-size:0.65rem; color:#9ca3af; }
+.top-bar .right { margin-left:auto; text-align:right; }
+.top-bar .date { color:#f59e0b; font-size:0.85rem; font-family:monospace; }
+.top-bar .round { color:#6b7280; font-size:0.65rem; }
+
+.map-container { flex:1; padding-top:50px; overflow:auto; -webkit-overflow-scrolling:touch; }
+.map-container svg { width:100%; min-height:60vh; display:block; }
+
+/* FLOATING BUTTONS */
+.fab { position:fixed; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.4rem; z-index:90; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
+.fab:active { transform:scale(0.92); }
+#fab-action { bottom:16px; right:16px; background:#3b82f6; }
+#fab-jump { top:60px; right:16px; background:#d97706; }
+#fab-diplo { bottom:76px; right:16px; background:#7c3aed; }
+#fab-advisor { bottom:136px; right:16px; background:#059669; }
+#fab-events { bottom:16px; left:16px; background:#4b5563; }
+#fab-settings { top:60px; left:16px; background:#4b5563; width:38px; height:38px; font-size:1.1rem; }
+#fab-home { top:60px; left:62px; background:#4b5563; width:38px; height:38px; font-size:1rem; }
+
+/* PANELS */
+.panel { display:none; position:fixed; background:rgba(17,24,39,0.96); border:1px solid #374151; border-radius:12px; z-index:200; backdrop-filter:blur(8px); overflow:hidden; }
+.panel.open { display:flex; flex-direction:column; }
+.panel-header { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #374151; }
+.panel-header h3 { font-size:0.9rem; font-weight:600; }
+.panel-close { background:none; color:#9ca3af; font-size:1.1rem; }
+.panel-body { flex:1; overflow-y:auto; padding:10px 14px; }
+
+/* ACTION PANEL */
+#action-panel { bottom:10px; right:10px; left:10px; max-height:55vh; }
+@media(min-width:600px){ #action-panel { left:auto; width:380px; } }
+#action-text { width:100%; height:90px; background:#1f2937; border:1px solid #4b5563; border-radius:8px; padding:10px; color:#fff; font-size:0.85rem; resize:none; }
+#action-text:focus { outline:none; border-color:#3b82f6; }
+.action-btns { display:flex; gap:6px; margin-top:8px; }
+.action-btns button { padding:8px 12px; border-radius:8px; font-size:0.75rem; color:#fff; }
+#btn-ideas { background:#92400e; }
+#btn-polish { background:#065f46; }
+#btn-submit-action { flex:1; background:#3b82f6; font-weight:600; }
+#suggestions-box { background:#1f2937; border:1px solid #374151; border-radius:8px; padding:8px; margin-bottom:8px; font-size:0.75rem; color:#d1d5db; white-space:pre-line; display:none; }
+#suggestions-box .lbl { color:#f59e0b; font-weight:600; margin-bottom:4px; display:block; font-size:0.7rem; }
+
+/* JUMP PANEL */
+#jump-panel { top:56px; right:10px; width:260px; }
+.jump-option { width:100%; text-align:left; padding:10px 14px; background:#1f2937; border-radius:8px; color:#fff; font-size:0.85rem; margin-bottom:6px; }
+.jump-option:active { background:#374151; }
+.jump-spinner { display:flex; flex-direction:column; align-items:center; padding:2rem; }
+.jump-spinner .spin { width:40px; height:40px; border:3px solid #f59e0b; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:10px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* EVENT MODAL */
+#event-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:1rem; }
+#event-modal.open { display:flex; }
+#event-modal .card { background:#111827; border:1px solid #374151; border-radius:12px; width:100%; max-width:460px; }
+#event-modal .card-head { padding:12px 16px; border-bottom:1px solid #374151; display:flex; justify-content:space-between; align-items:center; }
+#event-modal .card-head .counter { font-size:0.8rem; color:#9ca3af; }
+#event-modal .card-head .cat { font-size:0.7rem; background:#1f2937; padding:2px 8px; border-radius:4px; }
+#event-modal .card-body { padding:16px; }
+#event-modal .card-body h3 { font-size:1.1rem; margin-bottom:8px; }
+#event-modal .card-body p { font-size:0.85rem; color:#d1d5db; line-height:1.5; }
+#event-modal .card-foot { padding:12px 16px; border-top:1px solid #374151; text-align:right; }
+#event-modal .card-foot button { background:#3b82f6; color:#fff; padding:8px 20px; border-radius:8px; font-size:0.85rem; }
+
+/* EVENTS LOG */
+#events-panel { bottom:10px; left:10px; right:10px; max-height:55vh; }
+@media(min-width:600px){ #events-panel { right:auto; width:380px; } }
+.event-card { background:#1f2937; border:1px solid #374151; border-radius:8px; padding:8px 10px; margin-bottom:6px; }
+.event-card .ev-head { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.event-card .ev-head .ev-icon { font-size:0.9rem; }
+.event-card .ev-head .ev-title { font-size:0.8rem; font-weight:600; flex:1; }
+.event-card .ev-head .ev-round { font-size:0.65rem; color:#6b7280; }
+.event-card .ev-body { font-size:0.75rem; color:#9ca3af; }
+
+/* DIPLO PANEL */
+#diplo-panel { bottom:10px; right:10px; left:10px; max-height:65vh; }
+@media(min-width:600px){ #diplo-panel { left:auto; width:400px; } }
+.diplo-country { width:100%; text-align:left; padding:10px; background:#1f2937; border:1px solid #374151; border-radius:8px; margin-bottom:6px; display:flex; align-items:center; gap:8px; color:#fff; }
+.diplo-country .score { margin-left:auto; font-size:0.75rem; font-family:monospace; }
+.score-pos { color:#34d399; } .score-neg { color:#f87171; } .score-neu { color:#fbbf24; }
+.chat-messages { min-height:120px; max-height:40vh; overflow-y:auto; }
+.chat-msg { margin-bottom:6px; display:flex; }
+.chat-msg.player { justify-content:flex-end; }
+.chat-msg .bubble { max-width:80%; padding:8px 10px; border-radius:10px; font-size:0.8rem; }
+.chat-msg.player .bubble { background:#3b82f6; color:#fff; }
+.chat-msg.nation .bubble { background:#1f2937; border:1px solid #374151; color:#e5e7eb; }
+.chat-msg .speaker { font-size:0.65rem; font-weight:600; margin-bottom:2px; }
+.chat-input { display:flex; gap:6px; margin-top:8px; }
+.chat-input input { flex:1; background:#1f2937; border:1px solid #4b5563; border-radius:8px; padding:8px; color:#fff; font-size:0.8rem; }
+.chat-input input:focus { outline:none; border-color:#7c3aed; }
+.chat-input button { background:#7c3aed; color:#fff; padding:8px 14px; border-radius:8px; font-size:0.85rem; }
+.back-btn { background:none; color:#9ca3af; font-size:0.75rem; margin-right:8px; }
+
+/* ADVISOR PANEL */
+#advisor-panel { bottom:10px; right:60px; left:10px; max-height:55vh; }
+@media(min-width:600px){ #advisor-panel { left:auto; width:380px; right:10px; } }
+
+/* SETTINGS PANEL */
+#settings-panel { top:56px; left:10px; width:280px; }
+#settings-panel select, #settings-panel input { width:100%; background:#1f2937; border:1px solid #4b5563; border-radius:8px; padding:8px; color:#fff; font-size:0.8rem; margin-top:4px; }
+#settings-panel select:focus, #settings-panel input:focus { outline:none; border-color:#3b82f6; }
+#settings-panel label { font-size:0.7rem; color:#9ca3af; display:block; margin-top:10px; }
+#settings-panel .save-settings { width:100%; background:#3b82f6; color:#fff; padding:8px; border-radius:8px; font-size:0.8rem; margin-top:12px; }
+
+/* REGION POPUP */
+#region-popup { display:none; position:fixed; top:56px; left:10px; width:260px; background:rgba(17,24,39,0.96); border:1px solid #374151; border-radius:10px; z-index:150; padding:12px; backdrop-filter:blur(6px); }
+#region-popup.open { display:block; }
+#region-popup h4 { font-size:0.95rem; margin-bottom:6px; }
+#region-popup .rp-close { position:absolute; top:8px; right:10px; background:none; color:#9ca3af; font-size:1rem; }
+#region-popup .rp-info { font-size:0.75rem; color:#9ca3af; }
+#region-popup .rp-info p { margin:3px 0; }
+</style>
+</head>
+<body>
+
+<!-- MENU SCREEN -->
+<div id="menu" class="screen active">
+  <h1>Pax Alterna</h1>
+  <p class="sub">Песочница альтернативной истории</p>
+  <div class="tabs">
+    <button class="tab-active" onclick="showTab('new')">Новая игра</button>
+    <button class="tab-inactive" onclick="showTab('load')">Загрузить</button>
+  </div>
+  <div id="tab-new"></div>
+  <div id="tab-load" style="display:none"></div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game" class="screen">
+  <div class="top-bar">
+    <div class="flag" id="tb-flag"></div>
+    <div><div class="cname" id="tb-name"></div><div class="cleader" id="tb-leader"></div></div>
+    <div class="right"><div class="date" id="tb-date"></div><div class="round" id="tb-round"></div></div>
+  </div>
+  <div class="map-container"><svg id="map-svg" viewBox="100 20 700 480"></svg></div>
+
+  <button class="fab" id="fab-action" onclick="togglePanel('action-panel')">⚡</button>
+  <button class="fab" id="fab-jump" onclick="togglePanel('jump-panel')">⏩</button>
+  <button class="fab" id="fab-diplo" onclick="togglePanel('diplo-panel')">💬</button>
+  <button class="fab" id="fab-advisor" onclick="togglePanel('advisor-panel')">🎓</button>
+  <button class="fab" id="fab-events" onclick="togglePanel('events-panel')">📜</button>
+  <button class="fab" id="fab-settings" onclick="togglePanel('settings-panel')">⚙</button>
+  <button class="fab" id="fab-home" onclick="goHome()">🏠</button>
+
+  <!-- ACTION PANEL -->
+  <div class="panel" id="action-panel">
+    <div class="panel-header"><h3>⚡ Действия</h3><button class="panel-close" onclick="closePanel('action-panel')">✕</button></div>
+    <div class="panel-body">
+      <div id="suggestions-box"><span class="lbl">Идеи действий:</span><span id="suggestions-text"></span></div>
+      <textarea id="action-text" placeholder="Опишите действие... Например: «Укрепить армию» или «Направить послов»"></textarea>
+      <div class="action-btns">
+        <button id="btn-ideas" onclick="brainstorm()">💡 Идеи</button>
+        <button id="btn-polish" onclick="polish()">✨</button>
+        <button id="btn-submit-action" onclick="submitAction()">Отдать приказ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JUMP PANEL -->
+  <div class="panel" id="jump-panel">
+    <div class="panel-header"><h3>⏩ Прыжок</h3><button class="panel-close" onclick="closePanel('jump-panel')">✕</button></div>
+    <div class="panel-body" id="jump-body"></div>
+  </div>
+
+  <!-- EVENT MODAL -->
+  <div id="event-modal">
+    <div class="card">
+      <div class="card-head"><span class="counter" id="ev-counter"></span><span class="cat" id="ev-cat"></span></div>
+      <div class="card-body"><h3 id="ev-title"></h3><p id="ev-body"></p></div>
+      <div class="card-foot"><button onclick="nextEvent()" id="ev-next-btn">Далее →</button></div>
+    </div>
+  </div>
+
+  <!-- EVENTS LOG -->
+  <div class="panel" id="events-panel">
+    <div class="panel-header"><h3>📜 Журнал</h3><button class="panel-close" onclick="closePanel('events-panel')">✕</button></div>
+    <div class="panel-body" id="events-list"></div>
+  </div>
+
+  <!-- DIPLOMACY -->
+  <div class="panel" id="diplo-panel">
+    <div class="panel-header">
+      <div style="display:flex;align-items:center"><button class="back-btn" id="diplo-back" style="display:none" onclick="diploBack()">← Назад</button><h3 id="diplo-title">💬 Дипломатия</h3></div>
+      <button class="panel-close" onclick="closePanel('diplo-panel')">✕</button>
+    </div>
+    <div class="panel-body" id="diplo-body"></div>
+  </div>
+
+  <!-- ADVISOR -->
+  <div class="panel" id="advisor-panel">
+    <div class="panel-header"><h3>🎓 Советник</h3><button class="panel-close" onclick="closePanel('advisor-panel')">✕</button></div>
+    <div class="panel-body" id="advisor-body">
+      <div id="advisor-messages" style="min-height:100px;margin-bottom:8px"></div>
+      <div class="chat-input">
+        <input id="advisor-input" placeholder="Ваш вопрос советнику..." onkeydown="if(event.key==='Enter')askAdvisor()">
+        <button onclick="askAdvisor()">→</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="settings-panel">
+    <div class="panel-header"><h3>⚙ Настройки</h3><button class="panel-close" onclick="closePanel('settings-panel')">✕</button></div>
+    <div class="panel-body">
+      <label>Сложность</label>
+      <select id="set-difficulty" onchange="saveSettings()">
+        <option value="very_easy">Очень легко</option>
+        <option value="easy">Легко</option>
+        <option value="normal" selected>Нормально</option>
+        <option value="hard">Сложно</option>
+        <option value="very_hard">Очень сложно</option>
+        <option value="impossible">Невозможно</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- REGION POPUP -->
+  <div id="region-popup">
+    <button class="rp-close" onclick="closeRegionPopup()">✕</button>
+    <h4 id="rp-name"></h4>
+    <div class="rp-info" id="rp-info"></div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const PRESET = {
+  id:"preset-medieval-europe", name:"Средневековая Европа",
+  description:"Европа XII века. Франция, Англия, СРИ, Кастилия и Византия борются за влияние.",
+  startDate:"1190-01-01",
+  simulationRules:"Реалистичная средневековая симуляция.",
+  worldLore:"Эпоха крестовых походов. Третий крестовый поход только что завершился."
+};
+
+const COUNTRIES = [
+  {id:"c-fr",name:"Франция",color:"#3B82F6",leader:"Филипп II",capital:"r-idf",stats:{economy:60,military:55,stability:65},relations:{"c-en":-30,"c-hre":10,"c-ca":20,"c-byz":5}},
+  {id:"c-en",name:"Англия",color:"#EF4444",leader:"Ричард I",capital:"r-eng",stats:{economy:55,military:60,stability:50},relations:{"c-fr":-30,"c-hre":0,"c-ca":10,"c-byz":-5}},
+  {id:"c-hre",name:"Свящ. Рим. империя",color:"#F59E0B",leader:"Фридрих Барбаросса",capital:"r-rhi",stats:{economy:50,military:65,stability:40},relations:{"c-fr":10,"c-en":0,"c-ca":5,"c-byz":-10}},
+  {id:"c-ca",name:"Кастилия",color:"#10B981",leader:"Альфонсо VIII",capital:"r-cas",stats:{economy:45,military:50,stability:60},relations:{"c-fr":20,"c-en":10,"c-hre":5,"c-byz":0}},
+  {id:"c-byz",name:"Византия",color:"#8B5CF6",leader:"Исаак II Ангел",capital:"r-thr",stats:{economy:65,military:45,stability:35},relations:{"c-fr":5,"c-en":-5,"c-hre":-10,"c-ca":0}}
+];
+
+const REGIONS = [
+  {id:"r-eng",name:"Англия",type:"coastal",owner:"c-en",geo:[[180,80],[230,60],[260,80],[250,130],[220,150],[190,140],[170,110]]},
+  {id:"r-nor",name:"Нормандия",type:"coastal",owner:"c-fr",geo:[[210,170],[260,160],[280,180],[270,210],[230,220],[200,200]]},
+  {id:"r-bre",name:"Бретань",type:"coastal",owner:"c-fr",geo:[[150,190],[200,200],[210,230],[180,260],[140,250],[130,220]]},
+  {id:"r-idf",name:"Иль-де-Франс",type:"land",owner:"c-fr",geo:[[260,160],[320,150],[340,190],[320,230],[270,230],[250,200]]},
+  {id:"r-aqu",name:"Аквитания",type:"coastal",owner:"c-fr",geo:[[180,260],[270,230],[300,270],[290,330],[240,360],[190,340],[160,300]]},
+  {id:"r-bur",name:"Бургундия",type:"land",owner:"c-fr",geo:[[320,150],[380,140],[400,190],[380,240],[320,250],[300,210]]},
+  {id:"r-rhi",name:"Рейнланд",type:"land",owner:"c-hre",geo:[[380,80],[440,70],[460,110],[450,160],[400,170],[370,140]]},
+  {id:"r-swa",name:"Швабия",type:"land",owner:"c-hre",geo:[[400,170],[460,160],[480,200],[470,250],[420,260],[390,230]]},
+  {id:"r-sax",name:"Саксония",type:"land",owner:"c-hre",geo:[[440,50],[520,40],[540,80],[530,130],[470,140],[450,100]]},
+  {id:"r-bav",name:"Бавария",type:"land",owner:"c-hre",geo:[[470,140],[540,130],[560,180],[540,230],[480,240],[460,200]]},
+  {id:"r-cas",name:"Кастилия",type:"land",owner:"c-ca",geo:[[140,370],[220,360],[260,400],[240,450],[180,470],[120,440],[110,400]]},
+  {id:"r-ara",name:"Арагон",type:"coastal",owner:"c-ca",geo:[[260,350],[320,340],[350,380],[330,430],[280,440],[250,410]]},
+  {id:"r-thr",name:"Фракия",type:"coastal",owner:"c-byz",geo:[[580,300],[640,280],[670,310],[660,360],[620,380],[580,360],[570,330]]},
+  {id:"r-ana",name:"Анатолия",type:"coastal",owner:"c-byz",geo:[[660,280],[740,270],[770,310],[750,370],[690,380],[660,350]]},
+  {id:"r-gre",name:"Греция",type:"coastal",owner:"c-byz",geo:[[570,360],[620,380],[630,420],[610,460],[570,450],[550,410]]}
+];
+
+const POINTS = [
+  {id:"p-paris",type:"capital",region:"r-idf",x:290,y:190,owner:"c-fr",label:"Париж",str:0,locked:true},
+  {id:"p-london",type:"capital",region:"r-eng",x:220,y:105,owner:"c-en",label:"Лондон",str:0,locked:true},
+  {id:"p-aachen",type:"capital",region:"r-rhi",x:420,y:120,owner:"c-hre",label:"Ахен",str:0,locked:true},
+  {id:"p-toledo",type:"capital",region:"r-cas",x:190,y:420,owner:"c-ca",label:"Толедо",str:0,locked:true},
+  {id:"p-const",type:"capital",region:"r-thr",x:630,y:330,owner:"c-byz",label:"Константинополь",str:0,locked:true},
+  {id:"p-rouen",type:"city",region:"r-nor",x:240,y:190,owner:"c-fr",label:"Руан",str:0,locked:true},
+  {id:"p-bord",type:"city",region:"r-aqu",x:230,y:300,owner:"c-fr",label:"Бордо",str:0,locked:true},
+  {id:"p-mun",type:"city",region:"r-bav",x:510,y:185,owner:"c-hre",label:"Мюнхен",str:0,locked:true},
+  {id:"p-fr-army",type:"battalion",region:"r-idf",x:305,y:205,owner:"c-fr",label:"Армия Франции",str:5000,locked:false},
+  {id:"p-en-army",type:"battalion",region:"r-eng",x:235,y:115,owner:"c-en",label:"Армия Англии",str:4500,locked:false},
+  {id:"p-hre-army",type:"battalion",region:"r-rhi",x:435,y:130,owner:"c-hre",label:"Имперская армия",str:6000,locked:false}
+];
+
+const CAT_ICONS = {military:"⚔️",diplomacy:"🤝",borders:"🗺️",economy:"💰",internal:"🏛️"};
+const CAT_NAMES = {military:"Военное",diplomacy:"Дипломатия",borders:"Границы",economy:"Экономика",internal:"Внутреннее"};
+
+// ===== STATE =====
+let G = null; // current game state
+
+function newGame(playerId) {
+  const id = 'game-'+Date.now();
+  G = {
+    id, playerCountryId:playerId, currentDate:PRESET.startDate, round:1, difficulty:"normal",
+    countries: JSON.parse(JSON.stringify(COUNTRIES)),
+    regions: JSON.parse(JSON.stringify(REGIONS)),
+    points: JSON.parse(JSON.stringify(POINTS)),
+    events:[], actions:[], chats:{}, advisorMsgs:[]
+  };
+  saveGame();
+  startGame();
+}
+
+function saveGame() {
+  if(!G) return;
+  const saves = JSON.parse(localStorage.getItem('pax-saves')||'{}');
+  saves[G.id] = JSON.parse(JSON.stringify(G));
+  localStorage.setItem('pax-saves', JSON.stringify(saves));
+}
+
+function loadGame(id) {
+  const saves = JSON.parse(localStorage.getItem('pax-saves')||'{}');
+  G = saves[id];
+  if(G) startGame();
+}
+
+function deleteGame(id) {
+  const saves = JSON.parse(localStorage.getItem('pax-saves')||'{}');
+  delete saves[id];
+  localStorage.setItem('pax-saves', JSON.stringify(saves));
+  renderMenu();
+}
+
+function getSaves() {
+  return Object.values(JSON.parse(localStorage.getItem('pax-saves')||'{}'));
+}
+
+// ===== MENU =====
+function renderMenu() {
+  document.getElementById('menu').classList.add('active');
+  document.getElementById('game').classList.remove('active');
+  showTab('new');
+}
+
+function showTab(t) {
+  const tabs = document.querySelectorAll('.tabs button');
+  tabs[0].className = t==='new'?'tab-active':'tab-inactive';
+  tabs[1].className = t==='load'?'tab-active':'tab-inactive';
+  document.getElementById('tab-new').style.display = t==='new'?'block':'none';
+  document.getElementById('tab-load').style.display = t==='load'?'block':'none';
+  if(t==='new') renderNewGame();
+  else renderLoadGame();
+}
+
+let selectedCountry = COUNTRIES[0].id;
+
+function renderNewGame() {
+  const el = document.getElementById('tab-new');
+  let h = `<div class="preset-card selected"><h3>${PRESET.name}</h3><p>${PRESET.description}</p><p style="font-size:0.7rem;color:#6b7280;margin-top:4px">Начало: ${PRESET.startDate}</p></div>`;
+  h += '<div class="country-grid">';
+  for(const c of COUNTRIES) {
+    const sel = c.id===selectedCountry;
+    h += `<button class="country-btn ${sel?'selected':''}" onclick="selectedCountry='${c.id}';renderNewGame()">
+      <div><span class="dot" style="background:${c.color}"></span><span class="name">${c.name}</span></div>
+      <div class="leader">${c.leader}</div>
+      ${Object.entries(c.stats).map(([k,v])=>`<div class="stat-row"><span class="lbl">${k==='economy'?'Эконом.':k==='military'?'Армия':'Стабильн.'}</span><div class="bar"><div class="fill" style="width:${v}%"></div></div></div>`).join('')}
+    </button>`;
+  }
+  h += '</div>';
+  h += `<button class="start-btn" onclick="newGame('${selectedCountry}')">Начать игру</button>`;
+  el.innerHTML = h;
+}
+
+function renderLoadGame() {
+  const saves = getSaves();
+  const el = document.getElementById('tab-load');
+  if(!saves.length) { el.innerHTML='<p style="color:#6b7280;text-align:center;padding:2rem">Нет сохранённых игр</p>'; return; }
+  let h = '<div class="saved-list">';
+  for(const s of saves) {
+    const pc = s.countries.find(c=>c.id===s.playerCountryId);
+    h += `<div class="saved-item">
+      <div class="dot" style="background:${pc?.color||'#666'};width:14px;height:14px;border-radius:50%;flex-shrink:0"></div>
+      <div class="info"><div class="title">${pc?.name||'?'}</div><div class="meta">${s.currentDate} | Раунд ${s.round}</div></div>
+      <button class="play-btn" onclick="loadGame('${s.id}')">Играть</button>
+      <button class="del-btn" onclick="deleteGame('${s.id}')">✕</button>
+    </div>`;
+  }
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+// ===== GAME =====
+function startGame() {
+  document.getElementById('menu').classList.remove('active');
+  document.getElementById('game').classList.add('active');
+  renderTopBar();
+  renderMap();
+  renderEventsLog();
+}
+
+function goHome() { closeAllPanels(); renderMenu(); }
+
+function renderTopBar() {
+  const pc = G.countries.find(c=>c.id===G.playerCountryId);
+  document.getElementById('tb-flag').style.background = pc?.color||'#666';
+  document.getElementById('tb-name').textContent = pc?.name||'?';
+  document.getElementById('tb-leader').textContent = pc?.leader||'';
+  document.getElementById('tb-date').textContent = formatDate(G.currentDate);
+  document.getElementById('tb-round').textContent = 'Раунд '+G.round;
+}
+
+function formatDate(d) {
+  const m = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  const p = d.split('-');
+  return `${p[2]} ${m[parseInt(p[1])-1]} ${p[0]}`;
+}
+
+function countryById(id) { return G.countries.find(c=>c.id===id); }
+function getColor(ownerId) { return ownerId ? (countryById(ownerId)?.color||'#6B7280') : '#374151'; }
+
+function polyPath(coords) { return coords.map((c,i)=>`${i===0?'M':'L'}${c[0]},${c[1]}`).join(' ')+'Z'; }
+function centroid(coords) { let cx=0,cy=0; coords.forEach(c=>{cx+=c[0];cy+=c[1]}); return [cx/coords.length,cy/coords.length]; }
+
+function renderMap() {
+  const svg = document.getElementById('map-svg');
+  let h = `<defs><pattern id="water" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#1e3a5f"/><line x1="0" y1="5" x2="10" y2="5" stroke="#2563eb" stroke-width="0.3" opacity="0.3"/></pattern></defs>`;
+  h += '<rect x="100" y="20" width="700" height="480" fill="url(#water)"/>';
+
+  for(const r of G.regions) {
+    const path = polyPath(r.geo);
+    const isPlayer = r.owner===G.playerCountryId;
+    h += `<path d="${path}" fill="${getColor(r.owner)}" fill-opacity="0.7" stroke="#000" stroke-width="1" onclick="showRegion('${r.id}')" style="cursor:pointer"/>`;
+    if(isPlayer) h += `<path d="${path}" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6 3" opacity="0.6" pointer-events="none"/>`;
+  }
+
+  for(const r of G.regions) {
+    const [cx,cy] = centroid(r.geo);
+    h += `<text x="${cx}" y="${cy}" text-anchor="middle" font-size="8" fill="#fff" opacity="0.7" pointer-events="none" font-family="sans-serif">${r.name}</text>`;
+  }
+
+  for(const p of G.points) {
+    const col = getColor(p.owner);
+    if(p.type==='capital') {
+      let pts=[]; for(let i=0;i<10;i++){const r2=i%2===0?6:2.4;const a=Math.PI/5*i-Math.PI/2;pts.push(`${p.x+r2*Math.cos(a)},${p.y+r2*Math.sin(a)}`);}
+      h += `<polygon points="${pts.join(' ')}" fill="#fbbf24" stroke="#000" stroke-width="0.5"/>`;
+      h += `<text x="${p.x}" y="${p.y+14}" text-anchor="middle" font-size="7" fill="#fbbf24" font-weight="bold" font-family="sans-serif">${p.label}</text>`;
+    } else if(p.type==='city') {
+      h += `<rect x="${p.x-3}" y="${p.y-3}" width="6" height="6" fill="#e5e7eb" stroke="#000" stroke-width="0.5"/>`;
+      h += `<text x="${p.x}" y="${p.y+12}" text-anchor="middle" font-size="6" fill="#e5e7eb" font-family="sans-serif">${p.label}</text>`;
+    } else if(p.type==='battalion') {
+      h += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="${col}" stroke="#000" stroke-width="1"/>`;
+      h += `<line x1="${p.x-5}" y1="${p.y-6}" x2="${p.x+5}" y2="${p.y-6}" stroke="${col}" stroke-width="1.5"/>`;
+      h += `<text x="${p.x}" y="${p.y+12}" text-anchor="middle" font-size="5" fill="#d1d5db" font-family="sans-serif">${p.label}</text>`;
+    }
+  }
+  svg.innerHTML = h;
+}
+
+// ===== REGION POPUP =====
+function showRegion(rid) {
+  const r = G.regions.find(x=>x.id===rid);
+  if(!r) return;
+  const popup = document.getElementById('region-popup');
+  document.getElementById('rp-name').textContent = r.name;
+  let info = `<p>Тип: ${r.type==='land'?'Суша':r.type==='coastal'?'Побережье':r.type}</p>`;
+  if(r.owner) {
+    const c = countryById(r.owner);
+    info += `<p>Владелец: <span style="color:${c?.color}">${c?.name}</span></p>`;
+    info += `<p>Лидер: ${c?.leader}</p>`;
+    if(c) {
+      for(const [k,v] of Object.entries(c.stats)) {
+        info += `<div class="stat-row"><span class="lbl">${k==='economy'?'Экономика':k==='military'?'Армия':'Стабильн.'}</span><div class="bar"><div class="fill" style="width:${v}%"></div></div><span style="font-size:9px;color:#6b7280;width:20px;text-align:right">${v}</span></div>`;
+      }
+    }
+  } else { info += '<p>Ничейная земля</p>'; }
+  const rPts = G.points.filter(p=>p.region===rid);
+  if(rPts.length) {
+    info += '<p style="margin-top:6px;border-top:1px solid #374151;padding-top:4px;font-size:0.7rem;color:#6b7280">Объекты:</p>';
+    rPts.forEach(p=>{ info += `<p>${p.type==='capital'?'★':p.type==='city'?'■':'⚔'} ${p.label}${p.str?' ('+p.str+')':''}</p>`; });
+  }
+  document.getElementById('rp-info').innerHTML = info;
+  popup.classList.add('open');
+}
+function closeRegionPopup() { document.getElementById('region-popup').classList.remove('open'); }
+
+// ===== PANELS =====
+function togglePanel(id) { const p=document.getElementById(id); if(p.classList.contains('open')){closePanel(id);}else{closeAllPanels();p.classList.add('open');if(id==='jump-panel')renderJumpOptions();if(id==='diplo-panel')renderDiploList();} }
+function closePanel(id) { document.getElementById(id).classList.remove('open'); }
+function closeAllPanels() { document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open')); closeRegionPopup(); }
+
+// ===== ACTIONS =====
+function submitAction() {
+  const text = document.getElementById('action-text').value.trim();
+  if(!text) return;
+  G.actions.push({id:'a-'+Date.now(), text, round:G.round, status:'pending'});
+  document.getElementById('action-text').value = '';
+  document.getElementById('suggestions-box').style.display = 'none';
+  saveGame();
+}
+
+function brainstorm() {
+  const suggestions = `1. Укрепить армию и провести военные учения на границе
+2. Отправить послов к соседним державам для улучшения отношений
+3. Вложить средства в развитие экономики и торговых путей
+4. Провести внутренние реформы для повышения стабильности
+5. Основать новый город в стратегически важном регионе`;
+  document.getElementById('suggestions-text').textContent = suggestions;
+  document.getElementById('suggestions-box').style.display = 'block';
+}
+
+function polish() {
+  const el = document.getElementById('action-text');
+  if(el.value.trim()) el.value = el.value.trim() + ' (приказ уточнён и передан исполнителям)';
+}
+
+// ===== JUMP =====
+function renderJumpOptions() {
+  const opts = [{v:'week',l:'Неделя'},{v:'month',l:'Месяц'},{v:'3months',l:'3 месяца'},{v:'6months',l:'6 месяцев'},{v:'year',l:'Год'}];
+  document.getElementById('jump-body').innerHTML = opts.map(o=>`<button class="jump-option" onclick="doJump('${o.v}')">${o.l}</button>`).join('');
+}
+
+function addTime(d, jump) {
+  const dt = new Date(d);
+  if(jump==='week') dt.setDate(dt.getDate()+7);
+  else if(jump==='month') dt.setMonth(dt.getMonth()+1);
+  else if(jump==='3months') dt.setMonth(dt.getMonth()+3);
+  else if(jump==='6months') dt.setMonth(dt.getMonth()+6);
+  else if(jump==='year') dt.setFullYear(dt.getFullYear()+1);
+  else dt.setMonth(dt.getMonth()+1);
+  return dt.toISOString().split('T')[0];
+}
+
+function doJump(timeJump) {
+  document.getElementById('jump-body').innerHTML = '<div class="jump-spinner"><div class="spin"></div><p style="color:#f59e0b;font-size:0.85rem">Симуляция...</p></div>';
+
+  setTimeout(()=>{
+    const result = simulate(timeJump);
+    G.currentDate = result.newDate;
+    G.round++;
+    G.actions.forEach(a=>{ if(a.status==='pending') a.status='simulated'; });
+
+    result.events.forEach(ev => {
+      G.events.unshift({id:'ev-'+Date.now()+Math.random(), round:G.round-1, date:result.newDate, category:ev.category, title:ev.title, body:ev.body});
+      applyDeltas(ev.deltas);
+    });
+
+    saveGame();
+    renderTopBar();
+    renderMap();
+    renderEventsLog();
+    closePanel('jump-panel');
+
+    if(result.events.length) showEventModal(result.events, 0);
+  }, 600);
+}
+
+// ===== SIMULATION ENGINE =====
+function simulate(timeJump) {
+  const newDate = addTime(G.currentDate, timeJump);
+  const events = [];
+  const pending = G.actions.filter(a=>a.status==='pending'&&a.round===G.round);
+  const pc = countryById(G.playerCountryId);
+  const others = G.countries.filter(c=>c.id!==G.playerCountryId);
+
+  if(pending.length > 0) {
+    const txt = pending[0].text.toLowerCase();
+    if(txt.match(/арми|army|military|войск|солдат|воен/)) {
+      const nv = Math.min((pc.stats.military||50)+10, 100);
+      events.push({category:'military', title:`${pc.name} усиливает армию`, body:`По приказу ${pc.leader}, вооружённые силы значительно укреплены. Военная мощь выросла до ${nv}.`, deltas:[{type:'stat_change',countryId:pc.id,stat:'military',newValue:nv}]});
+    } else if(txt.match(/экономик|econom|trade|торгов|казн/)) {
+      const nv = Math.min((pc.stats.economy||50)+8, 100);
+      events.push({category:'economy', title:`Экономический рост в ${pc.name}`, body:`Экономические реформы принесли плоды. Торговля расширяется, казна пополняется.`, deltas:[{type:'stat_change',countryId:pc.id,stat:'economy',newValue:nv}]});
+    } else if(txt.match(/дипломат|diplomat|alliance|союз|посол|перегов/)) {
+      if(others.length) {
+        const t = others[Math.floor(Math.random()*others.length)];
+        const cur = pc.relations[t.id]||0;
+        const ns = Math.min(cur+20, 100);
+        events.push({category:'diplomacy', title:`Сближение ${pc.name} и ${t.name}`, body:`Дипломатические усилия привели к улучшению отношений между ${pc.name} и ${t.name}. Отношения: ${ns}.`, deltas:[{type:'relation_change',countryId:pc.id,targetCountryId:t.id,newScore:ns}]});
+      }
+    } else if(txt.match(/атак|напа|захват|вторж|войн|attack|invade/)) {
+      if(others.length) {
+        const t = others[Math.floor(Math.random()*others.length)];
+        const tRegions = G.regions.filter(r=>r.owner===t.id);
+        if(tRegions.length > 1) {
+          const target = tRegions[Math.floor(Math.random()*tRegions.length)];
+          events.push({category:'military', title:`${pc.name} атакует ${target.name}`, body:`Войска ${pc.name} вторгаются в ${target.name}, принадлежащую ${t.name}. После ожесточённых боёв регион переходит под контроль ${pc.name}.`, deltas:[{type:'region_owner_change',regionId:target.id,newOwnerId:pc.id},{type:'stat_change',countryId:pc.id,stat:'military',newValue:Math.max((pc.stats.military||50)-5,10)},{type:'relation_change',countryId:pc.id,targetCountryId:t.id,newScore:Math.max((pc.relations[t.id]||0)-30,-100)}]});
+        } else {
+          events.push({category:'military', title:`Военная кампания ${pc.name}`, body:`Армия ${pc.name} выступила в поход, но противник оказал сильное сопротивление. Кампания не принесла территориальных изменений.`, deltas:[{type:'stat_change',countryId:pc.id,stat:'military',newValue:Math.max((pc.stats.military||50)-3,10)}]});
+        }
+      }
+    } else {
+      const nv = Math.min((pc.stats.stability||50)+5, 100);
+      events.push({category:'internal', title:`${pc.name}: внутренние реформы`, body:`Руководство ${pc.name} проводит внутренние реформы. Стабильность укрепляется.`, deltas:[{type:'stat_change',countryId:pc.id,stat:'stability',newValue:nv}]});
+    }
+  }
+
+  // Random AI event
+  if(others.length>=2 && Math.random()>0.4) {
+    const c1 = others[Math.floor(Math.random()*others.length)];
+    const c2idx = Math.floor(Math.random()*others.length);
+    const c2 = others[c2idx];
+    if(c1.id!==c2.id) {
+      const ns = Math.floor(Math.random()*40)-20;
+      events.push({category:'diplomacy', title:`${c1.name} и ${c2.name}: перемены`, body:`Отношения между ${c1.name} и ${c2.name} претерпели изменения из-за внешнеполитических разногласий.`, deltas:[{type:'relation_change',countryId:c1.id,targetCountryId:c2.id,newScore:ns}]});
+    }
+  }
+
+  if(!events.length) events.push({category:'internal', title:'Спокойный период', body:'Время проходит мирно. Страны продолжают развиваться.', deltas:[]});
+  return {newDate, events};
+}
+
+function applyDeltas(deltas) {
+  for(const d of deltas) {
+    if(d.type==='region_owner_change') { const r=G.regions.find(x=>x.id===d.regionId); if(r) r.owner=d.newOwnerId; }
+    else if(d.type==='stat_change') { const c=countryById(d.countryId); if(c) c.stats[d.stat]=d.newValue; }
+    else if(d.type==='relation_change') { const c=countryById(d.countryId); if(c) c.relations[d.targetCountryId]=d.newScore; }
+    else if(d.type==='point_add') { G.points.push({id:'pt-'+Date.now(),type:d.pointType,region:d.regionId,x:d.coordX,y:d.coordY,owner:d.ownerCountryId,label:d.label,str:d.strength||0,locked:false}); }
+    else if(d.type==='point_remove') { const i=G.points.findIndex(p=>p.id===d.pointId); if(i>=0&&!G.points[i].locked) G.points.splice(i,1); }
+    else if(d.type==='point_move') { const p=G.points.find(x=>x.id===d.pointId); if(p){p.region=d.newRegionId;p.x=d.newCoordX;p.y=d.newCoordY;} }
+  }
+}
+
+// ===== EVENT MODAL =====
+let modalEvents=[], modalIdx=0;
+function showEventModal(evts, idx) {
+  modalEvents=evts; modalIdx=idx;
+  const ev=evts[idx];
+  document.getElementById('ev-counter').textContent=`Событие ${idx+1} из ${evts.length}`;
+  document.getElementById('ev-cat').textContent=`${CAT_ICONS[ev.category]||'📜'} ${CAT_NAMES[ev.category]||ev.category}`;
+  document.getElementById('ev-title').textContent=ev.title;
+  document.getElementById('ev-body').textContent=ev.body;
+  document.getElementById('ev-next-btn').textContent=idx<evts.length-1?'Далее →':'Закрыть';
+  document.getElementById('event-modal').classList.add('open');
+}
+function nextEvent() {
+  if(modalIdx<modalEvents.length-1) showEventModal(modalEvents, modalIdx+1);
+  else document.getElementById('event-modal').classList.remove('open');
+}
+
+// ===== EVENTS LOG =====
+function renderEventsLog() {
+  const el = document.getElementById('events-list');
+  if(!G.events.length) { el.innerHTML='<p style="color:#6b7280;text-align:center;padding:2rem">Событий пока нет</p>'; return; }
+  el.innerHTML = G.events.slice(0,50).map(ev=>`<div class="event-card"><div class="ev-head"><span class="ev-icon">${CAT_ICONS[ev.category]||'📜'}</span><span class="ev-title">${ev.title}</span><span class="ev-round">Р.${ev.round}</span></div><div class="ev-body">${ev.body}</div></div>`).join('');
+}
+
+// ===== DIPLOMACY =====
+let diploTarget = null;
+function renderDiploList() {
+  diploTarget = null;
+  document.getElementById('diplo-back').style.display='none';
+  document.getElementById('diplo-title').textContent='💬 Дипломатия';
+  const others = G.countries.filter(c=>c.id!==G.playerCountryId);
+  const pc = countryById(G.playerCountryId);
+  document.getElementById('diplo-body').innerHTML = others.map(c=>{
+    const score = pc.relations[c.id]||0;
+    const cls = score>0?'score-pos':score<0?'score-neg':'score-neu';
+    return `<button class="diplo-country" onclick="openDiploChat('${c.id}')"><span class="dot" style="background:${c.color};width:14px;height:14px;border-radius:50%;flex-shrink:0"></span><div><div style="font-size:0.85rem;font-weight:600">${c.name}</div><div style="font-size:0.7rem;color:#6b7280">${c.leader}</div></div><span class="score ${cls}">${score>0?'+':''}${score}</span></button>`;
+  }).join('');
+}
+
+function openDiploChat(cid) {
+  diploTarget = cid;
+  const c = countryById(cid);
+  document.getElementById('diplo-back').style.display='inline';
+  document.getElementById('diplo-title').textContent='💬 '+c.name;
+  if(!G.chats[cid]) G.chats[cid]=[];
+  renderDiploMessages(cid);
+}
+
+function diploBack() { renderDiploList(); }
+
+function renderDiploMessages(cid) {
+  const msgs = G.chats[cid]||[];
+  let h = '<div class="chat-messages">';
+  if(!msgs.length) h += '<p style="color:#6b7280;text-align:center;padding:2rem;font-size:0.8rem">Начните переговоры</p>';
+  for(const m of msgs) {
+    const speaker = m.role==='player' ? countryById(G.playerCountryId) : countryById(cid);
+    h += `<div class="chat-msg ${m.role}"><div class="bubble">${m.role!=='player'?`<div class="speaker" style="color:${speaker?.color}">${speaker?.leader||speaker?.name}</div>`:''}${m.text}</div></div>`;
+  }
+  h += '</div>';
+  h += `<div class="chat-input"><input id="diplo-input" placeholder="Ваше послание..." onkeydown="if(event.key==='Enter')sendDiploMsg()"><button onclick="sendDiploMsg()">→</button></div>`;
+  document.getElementById('diplo-body').innerHTML = h;
+  const chatDiv = document.querySelector('.chat-messages');
+  if(chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
+}
+
+function sendDiploMsg() {
+  const inp = document.getElementById('diplo-input');
+  if(!inp||!inp.value.trim()||!diploTarget) return;
+  const msg = inp.value.trim();
+  if(!G.chats[diploTarget]) G.chats[diploTarget]=[];
+  G.chats[diploTarget].push({role:'player',text:msg});
+
+  const c = countryById(diploTarget);
+  const pc = countryById(G.playerCountryId);
+  const score = pc.relations[diploTarget]||0;
+  let reply;
+  if(score>30) reply=`${c.leader} приветствует вас как друга. ${c.name} ценит наши добрые отношения и готова к сотрудничеству.`;
+  else if(score>0) reply=`${c.leader} внимательно выслушивает. ${c.name} готова рассмотреть взаимовыгодные условия.`;
+  else if(score>-30) reply=`${c.leader} сдержанно кивает. ${c.name} будет осторожна, но двери для дипломатии открыты.`;
+  else reply=`${c.leader} хмурится. Отношения между нами оставляют желать лучшего. Надеемся, что вы с серьёзными намерениями.`;
+
+  G.chats[diploTarget].push({role:'nation',text:reply});
+  saveGame();
+  renderDiploMessages(diploTarget);
+}
+
+// ===== ADVISOR =====
+function askAdvisor() {
+  const inp = document.getElementById('advisor-input');
+  const q = inp?.value.trim() || 'Дайте оценку обстановки.';
+  if(inp) inp.value='';
+  if(!G.advisorMsgs) G.advisorMsgs=[];
+  G.advisorMsgs.push({role:'player',text:q});
+
+  const pc = countryById(G.playerCountryId);
+  const tips = [
+    `Мой государь, ${pc.name} находится в устойчивом положении. Рекомендую укреплять экономику и поддерживать дипломатические связи.`,
+    `Ваше величество, советую обратить внимание на военную мощь. ${G.countries.length-1} соседних держав наблюдают за каждым шагом.`,
+    `Государь, стабильность — залог процветания. Внутренние реформы сейчас принесут больше пользы, чем внешняя экспансия.`,
+    `Мой совет — не пренебрегайте дипломатией. Союзники в этом мире дороже золота. Отношения с ${G.countries.filter(c=>c.id!==G.playerCountryId).sort((a,b)=>(pc.relations[b.id]||0)-(pc.relations[a.id]||0))[0]?.name} наиболее перспективны.`,
+  ];
+  G.advisorMsgs.push({role:'advisor',text:tips[Math.floor(Math.random()*tips.length)]});
+  saveGame();
+  renderAdvisorMessages();
+}
+
+function renderAdvisorMessages() {
+  const el = document.getElementById('advisor-messages');
+  const msgs = G.advisorMsgs||[];
+  if(!msgs.length) { el.innerHTML='<p style="color:#6b7280;text-align:center;padding:2rem;font-size:0.8rem">Задайте вопрос советнику</p>'; return; }
+  el.innerHTML = msgs.map(m=>`<div class="chat-msg ${m.role}"><div class="bubble">${m.role==='advisor'?'<div class="speaker" style="color:#34d399">Советник</div>':''}${m.text}</div></div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+// ===== SETTINGS =====
+function saveSettings() { if(G) { G.difficulty=document.getElementById('set-difficulty').value; saveGame(); } }
+
+// ===== INIT =====
+renderMenu();
+renderNewGame();
+</script>
+</body>
+</html>
