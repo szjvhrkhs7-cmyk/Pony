@@ -8,6 +8,7 @@ import TopBar from "@/components/TopBar";
 import EventLog from "@/components/EventLog";
 import DiplomacyPanel from "@/components/DiplomacyPanel";
 import AdvisorPanel from "@/components/AdvisorPanel";
+import SettingsPanel from "@/components/SettingsPanel";
 
 interface GameData {
   id: string;
@@ -181,6 +182,8 @@ export default function GamePage({
       <JumpPanel gameId={game.id} onJumpComplete={handleJumpComplete} />
 
       <EventLog events={game.events} />
+
+      <SettingsPanel gameId={game.id} />
     </div>
   );
 }
