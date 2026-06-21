@@ -6,6 +6,8 @@ import ActionPanel from "@/components/ActionPanel";
 import JumpPanel from "@/components/JumpPanel";
 import TopBar from "@/components/TopBar";
 import EventLog from "@/components/EventLog";
+import DiplomacyPanel from "@/components/DiplomacyPanel";
+import AdvisorPanel from "@/components/AdvisorPanel";
 
 interface GameData {
   id: string;
@@ -163,6 +165,17 @@ export default function GamePage({
         gameId={game.id}
         round={game.round}
         onActionAdded={loadGame}
+      />
+
+      <DiplomacyPanel
+        gameId={game.id}
+        playerCountryId={game.playerCountryId}
+        countries={game.countries}
+      />
+
+      <AdvisorPanel
+        gameId={game.id}
+        countryColor={playerCountry?.color || "#666"}
       />
 
       <JumpPanel gameId={game.id} onJumpComplete={handleJumpComplete} />

@@ -3,7 +3,10 @@ import { NextRequest } from "next/server";
 import { v4 as uuid } from "uuid";
 import { runStubSimulation } from "@/lib/engine/stub";
 import { applyDeltas } from "@/lib/engine/apply-deltas";
-import { SimulationOutputSchema, Delta } from "@/lib/schemas";
+import { SimulationOutputSchema, SimulationOutput, Delta } from "@/lib/schemas";
+import { isLLMConfigured } from "@/lib/engine/llm-adapter";
+import { runLLMSimulation } from "@/lib/engine/llm-simulation";
+import { buildContext } from "@/lib/engine/context-builder";
 
 export async function POST(
   request: NextRequest,
@@ -27,35 +30,73 @@ export async function POST(
   });
   const points = await prisma.gamePoint.findMany({ where: { gameId: id } });
 
-  const result = runStubSimulation({
-    gameId: id,
-    currentDate: game.currentDate,
-    round: game.round,
-    actions: actions.map((a) => ({ id: a.id, text: a.text })),
-    regions: regions.map((r) => ({
-      id: r.id,
-      regionId: r.regionId,
-      ownerCountryId: r.ownerCountryId,
-    })),
-    countries: countries.map((c) => ({
-      id: c.id,
-      countryId: c.countryId,
-      name: c.name,
-      stats: c.stats,
-      relations: c.relations,
-    })),
-    points: points.map((p) => ({
-      id: p.id,
-      pointId: p.pointId,
-      type: p.type,
-      regionId: p.regionId,
-      ownerCountryId: p.ownerCountryId,
-    })),
-    playerCountryId: game.playerCountryId,
-    timeJump,
-  });
+  let validated: SimulationOutput;
 
-  const validated = SimulationOutputSchema.parse(result);
+  if (isLLMConfigured()) {
+    try {
+      const ctx = await buildContext(id);
+      validated = await runLLMSimulation(ctx);
+    } catch (e) {
+      console.error("LLM simulation failed, falling back to stub:", e);
+      const stubResult = runStubSimulation({
+        gameId: id,
+        currentDate: game.currentDate,
+        round: game.round,
+        actions: actions.map((a) => ({ id: a.id, text: a.text })),
+        regions: regions.map((r) => ({
+          id: r.id,
+          regionId: r.regionId,
+          ownerCountryId: r.ownerCountryId,
+        })),
+        countries: countries.map((c) => ({
+          id: c.id,
+          countryId: c.countryId,
+          name: c.name,
+          stats: c.stats,
+          relations: c.relations,
+        })),
+        points: points.map((p) => ({
+          id: p.id,
+          pointId: p.pointId,
+          type: p.type,
+          regionId: p.regionId,
+          ownerCountryId: p.ownerCountryId,
+        })),
+        playerCountryId: game.playerCountryId,
+        timeJump,
+      });
+      validated = SimulationOutputSchema.parse(stubResult);
+    }
+  } else {
+    const stubResult = runStubSimulation({
+      gameId: id,
+      currentDate: game.currentDate,
+      round: game.round,
+      actions: actions.map((a) => ({ id: a.id, text: a.text })),
+      regions: regions.map((r) => ({
+        id: r.id,
+        regionId: r.regionId,
+        ownerCountryId: r.ownerCountryId,
+      })),
+      countries: countries.map((c) => ({
+        id: c.id,
+        countryId: c.countryId,
+        name: c.name,
+        stats: c.stats,
+        relations: c.relations,
+      })),
+      points: points.map((p) => ({
+        id: p.id,
+        pointId: p.pointId,
+        type: p.type,
+        regionId: p.regionId,
+        ownerCountryId: p.ownerCountryId,
+      })),
+      playerCountryId: game.playerCountryId,
+      timeJump,
+    });
+    validated = SimulationOutputSchema.parse(stubResult);
+  }
 
   const allDeltas: Delta[] = [];
   for (const event of validated.events) {

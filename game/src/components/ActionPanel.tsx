@@ -16,6 +16,9 @@ export default function ActionPanel({
   const [text, setText] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [sending, setSending] = useState(false);
+  const [brainstorming, setBrainstorming] = useState(false);
+  const [polishing, setPolishing] = useState(false);
+  const [suggestions, setSuggestions] = useState("");
 
   const submit = async () => {
     if (!text.trim()) return;
@@ -27,7 +30,31 @@ export default function ActionPanel({
     });
     setText("");
     setSending(false);
+    setSuggestions("");
     onActionAdded();
+  };
+
+  const brainstorm = async () => {
+    setBrainstorming(true);
+    const res = await fetch(`/api/game/${gameId}/brainstorm`, {
+      method: "POST",
+    });
+    const data = await res.json();
+    setSuggestions(data.suggestions);
+    setBrainstorming(false);
+  };
+
+  const polish = async () => {
+    if (!text.trim()) return;
+    setPolishing(true);
+    const res = await fetch(`/api/game/${gameId}/polish`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: text.trim() }),
+    });
+    const data = await res.json();
+    setText(data.polished);
+    setPolishing(false);
   };
 
   if (!isOpen) {
@@ -47,13 +74,26 @@ export default function ActionPanel({
       <div className="flex justify-between items-center p-3 border-b border-gray-700">
         <h3 className="text-white font-semibold">⚡ Действия (Раунд {round})</h3>
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={() => {
+            setIsOpen(false);
+            setSuggestions("");
+          }}
           className="text-gray-400 hover:text-white"
         >
           ✕
         </button>
       </div>
       <div className="p-3">
+        {suggestions && (
+          <div className="mb-3 bg-gray-800 border border-gray-700 rounded-lg p-3">
+            <p className="text-xs text-amber-400 mb-1 font-medium">
+              Идеи действий:
+            </p>
+            <p className="text-gray-300 text-xs whitespace-pre-line">
+              {suggestions}
+            </p>
+          </div>
+        )}
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -61,6 +101,22 @@ export default function ActionPanel({
           className="w-full h-28 bg-gray-800 border border-gray-600 rounded-lg p-3 text-white text-sm resize-none focus:outline-none focus:border-blue-500 placeholder-gray-500"
         />
         <div className="flex gap-2 mt-2">
+          <button
+            onClick={brainstorm}
+            disabled={brainstorming}
+            className="bg-amber-700 hover:bg-amber-600 disabled:bg-gray-700 text-white rounded-lg px-3 py-2 text-xs transition-colors"
+            title="Сгенерировать идеи действий"
+          >
+            {brainstorming ? "..." : "💡 Идеи"}
+          </button>
+          <button
+            onClick={polish}
+            disabled={!text.trim() || polishing}
+            className="bg-emerald-700 hover:bg-emerald-600 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg px-3 py-2 text-xs transition-colors"
+            title="Отполировать приказ"
+          >
+            {polishing ? "..." : "✨ Улучшить"}
+          </button>
           <button
             onClick={submit}
             disabled={!text.trim() || sending}

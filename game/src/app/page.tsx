@@ -19,12 +19,24 @@ interface Preset {
   countries: Country[];
 }
 
+interface SavedGame {
+  id: string;
+  presetName: string;
+  playerCountryName: string;
+  playerCountryColor: string;
+  currentDate: string;
+  round: number;
+  updatedAt: string;
+}
+
 export default function Home() {
   const router = useRouter();
   const [presets, setPresets] = useState<Preset[]>([]);
+  const [savedGames, setSavedGames] = useState<SavedGame[]>([]);
   const [selectedPreset, setSelectedPreset] = useState<Preset | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [creating, setCreating] = useState(false);
+  const [tab, setTab] = useState<"new" | "load">("new");
 
   useEffect(() => {
     fetch("/api/presets")
@@ -38,6 +50,9 @@ export default function Home() {
           }
         }
       });
+    fetch("/api/games")
+      .then((r) => r.json())
+      .then((data) => setSavedGames(data));
   }, []);
 
   const startGame = async () => {
@@ -55,6 +70,11 @@ export default function Home() {
     router.push(`/game/${gameId}`);
   };
 
+  const deleteGame = async (gameId: string) => {
+    await fetch(`/api/game/${gameId}/save`, { method: "DELETE" });
+    setSavedGames((prev) => prev.filter((g) => g.id !== gameId));
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center">
       <div className="w-full max-w-2xl mx-auto p-8">
@@ -67,7 +87,73 @@ export default function Home() {
           </p>
         </div>
 
-        {presets.length === 0 ? (
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => setTab("new")}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+              tab === "new"
+                ? "bg-amber-600 text-white"
+                : "bg-gray-800 text-gray-400 hover:text-white"
+            }`}
+          >
+            Новая игра
+          </button>
+          <button
+            onClick={() => setTab("load")}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+              tab === "load"
+                ? "bg-amber-600 text-white"
+                : "bg-gray-800 text-gray-400 hover:text-white"
+            }`}
+          >
+            Загрузить ({savedGames.length})
+          </button>
+        </div>
+
+        {tab === "load" ? (
+          <div className="bg-gray-900/80 border border-gray-700 rounded-xl p-6 backdrop-blur-sm">
+            {savedGames.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                Нет сохранённых игр
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {savedGames.map((g) => (
+                  <div
+                    key={g.id}
+                    className="flex items-center gap-3 p-4 bg-gray-800 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                  >
+                    <div
+                      className="w-4 h-4 rounded-full shrink-0"
+                      style={{ backgroundColor: g.playerCountryColor }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium">
+                        {g.playerCountryName} — {g.presetName}
+                      </p>
+                      <p className="text-gray-500 text-xs">
+                        {g.currentDate} | Раунд {g.round} |{" "}
+                        {new Date(g.updatedAt).toLocaleDateString("ru")}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => router.push(`/game/${g.id}`)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-1.5 text-xs transition-colors shrink-0"
+                    >
+                      Играть
+                    </button>
+                    <button
+                      onClick={() => deleteGame(g.id)}
+                      className="text-red-400 hover:text-red-300 text-xs shrink-0"
+                    >
+                      Удалить
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : presets.length === 0 ? (
           <div className="text-center py-12">
             <div className="animate-spin w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4" />
             <p className="text-gray-400">Загрузка пресетов...</p>
