@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для моей любимой Саши</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Montserrat:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #1a0a1e;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;
+        }
+
+        .slide-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 600px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .photo-frame {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow:
+                0 25px 60px rgba(180, 80, 150, 0.4),
+                0 0 100px rgba(200, 100, 180, 0.15),
+                inset 0 0 0 3px rgba(255, 200, 230, 0.3);
+            max-width: 420px;
+            width: 100%;
+            aspect-ratio: auto;
+        }
+
+        .photo-frame::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #ff6b9d, #c44dff, #ff6b9d, #ffb86c);
+            background-size: 300% 300%;
+            z-index: -1;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 18px;
+        }
+
+        .text-block {
+            text-align: center;
+            padding: 0 10px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .compliment {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: #ffb6d9;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 150, 200, 0.5);
+            line-height: 1.4;
+        }
+
+        .poem {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 180, 220, 0.3);
+            color: #ffb6d9;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 130, 190, 0.25);
+            border-color: rgba(255, 180, 220, 0.6);
+            box-shadow: 0 0 25px rgba(255, 130, 190, 0.3);
+        }
+
+        .nav-btn.prev { left: 20px; }
+        .nav-btn.next { right: 20px; }
+
+        .dots {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 180, 220, 0.2);
+            border: 2px solid rgba(255, 180, 220, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #ff6b9d;
+            border-color: #ff6b9d;
+            box-shadow: 0 0 15px rgba(255, 107, 157, 0.6);
+            transform: scale(1.2);
+        }
+
+        .header-title {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #ffb6d9;
+            text-shadow: 0 0 30px rgba(255, 150, 200, 0.5);
+            z-index: 10;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .heart-icon {
+            display: inline-block;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #2d1035, #1a0a1e);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        .intro-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .intro-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: #ffb6d9;
+            text-align: center;
+            line-height: 1.6;
+            text-shadow: 0 0 40px rgba(255, 150, 200, 0.5);
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        .intro-btn {
+            margin-top: 40px;
+            padding: 15px 45px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #fff;
+            background: linear-gradient(135deg, #ff6b9d, #c44dff);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(200, 80, 180, 0.4);
+            animation: fadeInUp 1.5s ease-out 0.5s both;
+        }
+
+        .intro-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(200, 80, 180, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .slide-content {
+                gap: 20px;
+                padding: 70px 15px 80px;
+            }
+
+            .photo-frame {
+                max-width: 320px;
+            }
+
+            .compliment {
+                font-size: 1.1rem;
+            }
+
+            .poem {
+                font-size: 1rem;
+            }
+
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+
+            .nav-btn.prev { left: 10px; }
+            .nav-btn.next { right: 10px; }
+
+            .header-title {
+                font-size: 1.2rem;
+            }
+
+            .intro-text {
+                font-size: 1.8rem;
+                padding: 0 20px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .slide-content {
+                gap: 15px;
+            }
+
+            .photo-frame {
+                max-width: 280px;
+            }
+
+            .compliment {
+                font-size: 1rem;
+            }
+
+            .poem {
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="intro-overlay" id="intro">
+        <div class="intro-text">
+            <span class="heart-icon">&#10084;</span><br>
+            Моей любимой Саше<br>
+            <span style="font-size: 0.6em; opacity: 0.7;">с любовью и восхищением</span>
+        </div>
+        <button class="intro-btn" onclick="startCarousel()">Открыть</button>
+    </div>
+
+    <div class="bg-particles" id="particles"></div>
+
+    <div class="header-title">
+        <span class="heart-icon">&#10084;</span> Моя любимая Саша <span class="heart-icon">&#10084;</span>
+    </div>
+
+    <div class="carousel-container" id="carousel">
+
+        <!-- Slide 1: Sasha with newborn -->
+        <div class="slide active" data-index="0">
+            <div class="slide-content">
+                <div class="photo-frame">
+                    <img src="photos/photo1.jpeg" alt="Саша с малышом">
+                </div>
+                <div class="text-block">
+                    <div class="compliment">Самая нежная и заботливая мама на свете</div>
+                    <div class="poem">
+                        Ты держишь чудо на руках,<br>
+                        И столько счастья в тех глазах!<br>
+                        Нежнее мамы в мире нет,<br>
+                        Ты — самый тёплый в жизни свет.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Couple selfie -->
+        <div class="slide" data-index="1">
+            <div class="slide-content">
+                <div class="photo-frame">
+                    <img src="photos/photo2.jpeg" alt="Саша и любимый">
+                </div>
+                <div class="text-block">
+                    <div class="compliment">С тобой любой день — лучший день</div>
+                    <div class="poem">
+                        Твоя улыбка — солнца луч,<br>
+                        Прогонит прочь любую туч.<br>
+                        С тобою рядом — я живу,<br>
+                        Люблю тебя, боготворю!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Close-up portrait -->
+        <div class="slide" data-index="2">
+            <div class="slide-content">
+                <div class="photo-frame">
+                    <img src="photos/photo3.jpeg" alt="Саша — портрет">
+                </div>
+                <div class="text-block">
+                    <div class="compliment">Эти глаза — в них целый мир</div>
+                    <div class="poem">
+                        В твоих глазах — осенний мёд,<br>
+                        Кто взглянет раз — тот пропадёт.<br>
+                        Красивей не было и нет,<br>
+                        Ты — мой любимый силуэт.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Natural/spa look -->
+        <div class="slide" data-index="3">
+            <div class="slide-content">
+                <div class="photo-frame">
+                    <img src="photos/photo4.jpeg" alt="Саша — естественная красота">
+                </div>
+                <div class="text-block">
+                    <div class="compliment">Красива просто — без прикрас</div>
+                    <div class="poem">
+                        Без макияжа, без прикрас —<br>
+                        Ты ярче звёзд в сто тысяч раз.<br>
+                        Такая нежность, красота,<br>
+                        В тебе — волшебная мечта.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Sasha with baby girl -->
+        <div class="slide" data-index="4">
+            <div class="slide-content">
+                <div class="photo-frame">
+                    <img src="photos/photo5.jpeg" alt="Саша с дочкой">
+                </div>
+                <div class="text-block">
+                    <div class="compliment">Лучшая мама для нашей малышки</div>
+                    <div class="poem">
+                        Две улыбки — мама, дочка,<br>
+                        Как две звёздочки, два цветочка.<br>
+                        Мама лучшая на свете —<br>
+                        Это знают даже дети!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <button class="nav-btn prev" onclick="prevSlide()">&#10094;</button>
+    <button class="nav-btn next" onclick="nextSlide()">&#10095;</button>
+
+    <div class="dots" id="dots">
+        <div class="dot active" onclick="goToSlide(0)"></div>
+        <div class="dot" onclick="goToSlide(1)"></div>
+        <div class="dot" onclick="goToSlide(2)"></div>
+        <div class="dot" onclick="goToSlide(3)"></div>
+        <div class="dot" onclick="goToSlide(4)"></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 5;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#ff6b9d', '#c44dff', '#ffb86c', '#ff9de0', '#b76cff'];
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 6 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                particle.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function updateSlide() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlide();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        function startCarousel() {
+            document.getElementById('intro').classList.add('hidden');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+
+        createParticles();
+    </script>
+</body>
+</html>
