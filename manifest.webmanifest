@@ -1,0 +1,10 @@
+{
+  "name": "Salden’s — заказы",
+  "short_name": "Salden’s",
+  "description": "Запись заказов по меню Salden’s Taphouse",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4efe7",
+  "theme_color": "#4b1720"
+}
