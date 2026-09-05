@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#05070a" />
+  <title>Trump-o-meter 3000 — мирный прогноз</title>
+  <meta name="description" content="Мемный новостной индекс мирного урегулирования войны в Украине на основе свежих публикаций GDELT." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <div class="background" aria-hidden="true"></div>
+    <div class="overlay" aria-hidden="true"></div>
+
+    <section class="hero glass">
+      <div class="eyebrow">TRUMP-O-METER 3000 · LIVE NEWS</div>
+      <h1>Когда уже мир?</h1>
+      <p class="subtitle">Мемный индекс мирного урегулирования войны в Украине. При каждом открытии страницы свежие новости заново запрашиваются из GDELT.</p>
+
+      <div class="forecast-row">
+        <div>
+          <div id="probability" class="probability">…</div>
+          <div class="probability-caption">эвристический прогноз</div>
+        </div>
+        <div class="forecast-copy">
+          <strong id="mood">Ищу свежие новости…</strong>
+          <p>Процент пересчитывается в браузере по свежим заголовкам. Локального кэша прогноза нет.</p>
+        </div>
+      </div>
+
+      <div class="meter" id="meter" aria-label="Индекс">
+        <div id="meterFill" class="meter-fill"></div>
+        <span id="meterMarker" class="meter-marker">▲</span>
+      </div>
+      <div class="meter-labels"><span>«ну всё плохо»</span><span>«созвон прошёл конструктивно»</span></div>
+
+      <div class="actions">
+        <button id="refreshButton" type="button">Обновить прогноз</button>
+        <span id="timestamp" class="timestamp"></span>
+      </div>
+      <div id="errorNote" class="error-note hidden"></div>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat glass positive"><span>Позитивных сигналов</span><strong id="positiveCount">0</strong></article>
+      <article class="stat glass negative"><span>Негативных сигналов</span><strong id="negativeCount">0</strong></article>
+      <article class="stat glass neutral"><span>Нейтральных</span><strong id="neutralCount">0</strong></article>
+    </section>
+
+    <section class="news glass">
+      <div class="section-head">
+        <div><div class="eyebrow">ЧТО ДВИНУЛО ПРОГНОЗ</div><h2>Свежие новости</h2></div>
+        <span class="provider">Источник поиска: GDELT DOC 2.0</span>
+      </div>
+      <div id="newsList" class="news-list"><div class="empty">Загружаю публикации…</div></div>
+    </section>
+
+    <section class="method glass">
+      <h2>Как считается</h2>
+      <p>Заголовки получают положительные баллы за переговоры, перемирие, мирные предложения и встречи лидеров и отрицательные за срыв переговоров, удары, наступление и эскалацию. Более свежие публикации имеют больший вес.</p>
+      <p class="disclaimer">Это развлекательный новостной индикатор, а не научно рассчитанная вероятность, экспертная оценка или достоверное предсказание исхода войны.</p>
+    </section>
+
+    <footer>Фоновое фото: Gage Skidmore, CC BY-SA 2.0, Wikimedia Commons. Фото используется в сатирическом/мемном оформлении.</footer>
+  </main>
+  <script src="./app.js" defer></script>
+</body>
+</html>
