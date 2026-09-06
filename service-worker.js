@@ -1,13 +1,15 @@
-const CACHE_NAME = 'seeker-chronicles-v5';
+const CACHE_NAME = 'seeker-chronicles-v6';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './mobile.css',
   './adaptive.css',
+  './session-view.css',
   './app.js',
   './local-meta.js',
   './sync.js',
+  './session-view.js',
   './manifest.webmanifest'
 ];
 
