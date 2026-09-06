@@ -3,76 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#15231d" />
+  <meta name="theme-color" content="#21080d" />
   <meta name="description" content="Хроники Искателя — личная записная книжка игрока для настольных ролевых кампаний." />
   <title>Хроники Искателя</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./mobile.css" />
-  <link rel="stylesheet" href="./adaptive.css" />
-  <link rel="stylesheet" href="./session-view.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar" aria-label="Навигация">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">✦</div>
-        <div>
-          <strong>Хроники Искателя</strong>
-          <span>записная книжка игрока</span>
-        </div>
-      </div>
-      <nav class="nav-list">
-        <button class="nav-item is-active" type="button" aria-current="page">
-          <span aria-hidden="true">◈</span>
-          <span>Игры</span>
-        </button>
-      </nav>
-    </aside>
-
-    <main class="main-area">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Личный архив приключений</p>
-          <h1>Игры</h1>
-        </div>
-        <div class="topbar-tools">
-          <div class="topbar-actions">
-            <button class="button button-ghost cloud-button" id="cloudButton" type="button" data-mode="local">
-              <span class="cloud-dot" aria-hidden="true"></span>
-              <span id="cloudStatusText">Локально</span>
-            </button>
-            <label class="scale-control">
-              <span>Размер</span>
-              <select id="scaleSelect" aria-label="Размер интерфейса">
-                <option value="0.8">80%</option>
-                <option value="0.9">90%</option>
-                <option value="1" selected>100%</option>
-                <option value="1.1">110%</option>
-                <option value="1.2">120%</option>
-              </select>
-            </label>
-            <button class="button button-ghost" id="exportButton" type="button">Экспорт</button>
-            <label class="button button-ghost file-button">
-              Импорт
-              <input id="importInput" type="file" accept="application/json" hidden />
-            </label>
-            <button class="button button-primary new-game-action" id="newCampaignButton" type="button">+ Новая игра</button>
+  <div class="fantasy-app">
+    <header class="app-header">
+      <div class="brand-row">
+        <div class="brand-lockup">
+          <div class="brand-sigil" aria-hidden="true"><span>✦</span></div>
+          <div>
+            <strong>Хроники Искателя</strong>
+            <span>записная книжка игрока</span>
           </div>
         </div>
-      </header>
+        <button class="header-add" id="newCampaignButton" type="button" aria-label="Создать новую игру">＋</button>
+      </div>
+      <nav class="section-tabs" aria-label="Разделы приложения">
+        <button class="section-tab is-active" type="button" aria-current="page">Игры</button>
+      </nav>
+    </header>
 
-      <section class="campaigns-strip" id="campaignsStrip" aria-label="Список игр"></section>
+    <main class="app-main">
+      <section id="homeScreen" class="screen home-screen">
+        <div class="screen-heading">
+          <p class="eyebrow">Личный архив приключений</p>
+          <h1>Мои игры</h1>
+        </div>
 
-      <section class="workspace is-hidden" id="workspace">
-        <article class="campaign-hero parchment-panel">
-          <div class="campaign-heading">
+        <button class="button button-primary wide-action" type="button" id="homeNewCampaignButton">＋ Новая игра</button>
+
+        <div class="utility-row" aria-label="Сохранение и перенос данных">
+          <button class="utility-button cloud-button" id="cloudButton" type="button" data-mode="local">
+            <span class="cloud-dot" aria-hidden="true"></span>
+            <span id="cloudStatusText">Локально</span>
+          </button>
+          <button class="utility-button" id="exportButton" type="button">Экспорт</button>
+          <label class="utility-button file-button">
+            Импорт
+            <input id="importInput" type="file" accept="application/json" hidden />
+          </label>
+        </div>
+
+        <section class="campaign-list" id="campaignsStrip" aria-label="Список игр"></section>
+
+        <section class="empty-campaigns parchment-card is-hidden" id="campaignsEmpty">
+          <div class="empty-rune" aria-hidden="true">✦</div>
+          <h2>Здесь пока пусто</h2>
+          <p>Создайте первую игру. Название, описание и все записи вы заполните сами.</p>
+          <button class="button button-primary" id="emptyNewCampaignButton" type="button">Создать игру</button>
+        </section>
+      </section>
+
+      <section id="workspace" class="screen campaign-screen is-hidden">
+        <div class="campaign-topline">
+          <button class="back-button" id="backToGamesButton" type="button" aria-label="Вернуться к списку игр">‹</button>
+          <strong id="campaignScreenTitle">Игра</strong>
+          <button class="more-button" id="campaignTopEditButton" type="button" aria-label="Редактировать игру">•••</button>
+        </div>
+
+        <article class="parchment-card campaign-summary">
+          <div class="campaign-summary-head">
             <div>
               <p class="eyebrow" id="campaignMeta"></p>
               <h2 id="campaignTitle"></h2>
               <p class="campaign-subtitle" id="campaignSubtitle"></p>
             </div>
-            <button class="icon-text-button" id="editCampaignButton" type="button">✎ Редактировать</button>
+            <button class="text-action" id="editCampaignButton" type="button">✎ Редактировать</button>
           </div>
 
           <div class="campaign-facts">
@@ -82,46 +83,44 @@
           </div>
         </article>
 
-        <div class="workspace-grid">
-          <section class="parchment-panel journal-panel">
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">Общая запись</p>
-                <h3>Хроника игры</h3>
-              </div>
-              <span class="save-state" id="journalSaveState">Сохранено</span>
+        <section class="parchment-card journal-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Общая запись</p>
+              <h3>Хроника игры</h3>
             </div>
+            <span class="save-state" id="journalSaveState">Сохранено</span>
+          </div>
 
-            <div class="editor-toolbar" role="toolbar" aria-label="Форматирование текста">
-              <button type="button" data-command="bold" title="Жирный"><b>Ж</b></button>
-              <button type="button" data-command="italic" title="Курсив"><i>К</i></button>
-              <button type="button" data-command="underline" title="Подчёркивание"><u>П</u></button>
-              <span class="toolbar-divider"></span>
-              <button type="button" data-block="h2" title="Заголовок">H2</button>
-              <button type="button" data-block="h3" title="Подзаголовок">H3</button>
-              <button type="button" data-block="p" title="Обычный текст">¶</button>
-              <span class="toolbar-divider"></span>
-              <button type="button" data-command="insertUnorderedList" title="Маркированный список">• список</button>
-              <button type="button" data-command="insertOrderedList" title="Нумерованный список">1. список</button>
-              <button type="button" data-block="blockquote" title="Цитата">❝</button>
-              <span class="toolbar-divider"></span>
-              <button type="button" id="linkButton" title="Добавить ссылку">↗ ссылка</button>
-              <button type="button" data-command="removeFormat" title="Очистить форматирование">Tx</button>
-            </div>
-            <div class="rich-editor" id="campaignJournal" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте сюда всё, что хотите сохранить по этой игре…"></div>
-          </section>
+          <div class="editor-toolbar" role="toolbar" aria-label="Форматирование текста">
+            <button type="button" data-command="bold" title="Жирный"><b>B</b></button>
+            <button type="button" data-command="italic" title="Курсив"><i>I</i></button>
+            <button type="button" data-command="underline" title="Подчёркивание"><u>U</u></button>
+            <span class="toolbar-divider"></span>
+            <button type="button" data-block="h2" title="Заголовок">H₂</button>
+            <button type="button" data-block="h3" title="Подзаголовок">H₃</button>
+            <button type="button" data-block="p" title="Обычный текст">¶</button>
+            <span class="toolbar-divider"></span>
+            <button type="button" data-command="insertUnorderedList" title="Маркированный список">☷</button>
+            <button type="button" data-command="insertOrderedList" title="Нумерованный список">☰</button>
+            <button type="button" data-block="blockquote" title="Цитата">❝</button>
+            <span class="toolbar-divider"></span>
+            <button type="button" id="linkButton" title="Добавить ссылку">↗</button>
+            <button type="button" data-command="removeFormat" title="Очистить форматирование">Tx</button>
+          </div>
+          <div class="rich-editor" id="campaignJournal" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте сюда всё, что хотите сохранить по этой игре…"></div>
+        </section>
 
-          <aside class="parchment-panel quick-notes-panel">
-            <div class="section-heading compact-heading">
-              <div>
-                <p class="eyebrow">Перед следующей игрой</p>
-                <h3>Не забыть</h3>
-              </div>
+        <aside class="parchment-card quick-notes-panel">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Перед следующей игрой</p>
+              <h3>Не забыть</h3>
             </div>
-            <textarea id="quickNotes" rows="10" maxlength="3000" placeholder="Короткие напоминания…"></textarea>
-            <p class="field-hint">Сохраняется автоматически.</p>
-          </aside>
-        </div>
+          </div>
+          <textarea id="quickNotes" rows="6" maxlength="3000" placeholder="Короткие напоминания…"></textarea>
+          <p class="field-hint">Сохраняется автоматически.</p>
+        </aside>
 
         <section class="sessions-section">
           <div class="section-heading sessions-heading">
@@ -129,23 +128,16 @@
               <p class="eyebrow">Дневник приключения</p>
               <h3>Дни игры</h3>
             </div>
-            <button class="button button-primary" id="newSessionButton" type="button">+ Добавить день</button>
+            <button class="button button-primary" id="newSessionButton" type="button">＋ Добавить день</button>
           </div>
           <div class="sessions-grid" id="sessionsGrid"></div>
           <div class="empty-state is-hidden" id="sessionsEmpty">
-            <div class="empty-icon" aria-hidden="true">✧</div>
-            <h3>Здесь пока пусто</h3>
-            <p>Добавьте игровой день, если хотите сохранить отдельную запись и обложку.</p>
+            <div class="empty-rune" aria-hidden="true">✧</div>
+            <h3>Записей пока нет</h3>
+            <p>Добавьте игровой день, чтобы сохранить текст и собственную обложку.</p>
             <button class="button button-primary" id="emptyNewSessionButton" type="button">Добавить день</button>
           </div>
         </section>
-      </section>
-
-      <section class="empty-campaigns parchment-panel" id="campaignsEmpty">
-        <div class="empty-icon" aria-hidden="true">✦</div>
-        <h2>Здесь пока пусто</h2>
-        <p>Создайте первую игру. Название, описание и все записи вы заполните сами.</p>
-        <button class="button button-primary" id="emptyNewCampaignButton" type="button">+ Создать игру</button>
       </section>
     </main>
   </div>
@@ -166,7 +158,7 @@
       <div class="modal-actions split-actions">
         <button class="button button-danger is-hidden" id="deleteCampaignButton" type="button">Удалить игру</button>
         <div>
-          <button class="button button-ghost" type="button" data-close-modal>Отмена</button>
+          <button class="button button-muted" type="button" data-close-modal>Отмена</button>
           <button class="button button-primary" type="submit">Сохранить</button>
         </div>
       </div>
@@ -175,26 +167,26 @@
 
   <section class="modal session-modal is-hidden" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionModalTitle">
     <button class="modal-close" type="button" data-close-modal aria-label="Закрыть">×</button>
-    <p class="eyebrow">День игры</p>
+    <p class="eyebrow">Игровой день</p>
     <h2 id="sessionModalTitle">Новый игровой день</h2>
     <form id="sessionForm">
       <div class="cover-uploader" id="coverUploader">
         <input id="sessionCoverInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden />
-        <div class="cover-preview" id="coverPreview">
+        <div class="cover-preview" id="coverPreview" role="button" tabindex="0" aria-label="Добавить обложку игрового дня">
           <div class="cover-placeholder">
-            <span aria-hidden="true">✦</span>
-            <strong>Обложка игрового дня</strong>
+            <span class="cover-plus" aria-hidden="true">＋</span>
+            <strong>Добавить обложку</strong>
             <small>Нажмите или перетащите сюда картинку</small>
           </div>
         </div>
         <div class="cover-actions">
-          <button class="button button-ghost" id="chooseCoverButton" type="button">Выбрать картинку</button>
+          <button class="button button-muted" id="chooseCoverButton" type="button">Выбрать картинку</button>
           <button class="button button-danger is-hidden" id="removeCoverButton" type="button">Удалить обложку</button>
         </div>
       </div>
 
-      <div class="form-columns three-columns">
-        <label><span>Название дня *</span><input id="sessionTitleInput" required maxlength="100" placeholder="Название" /></label>
+      <label><span>Название дня *</span><input id="sessionTitleInput" required maxlength="100" placeholder="Например, «День 1»" /></label>
+      <div class="form-columns">
         <label><span>Дата</span><input id="sessionDateInput" type="date" /></label>
         <label><span>Место</span><input id="sessionLocationInput" maxlength="100" placeholder="Необязательно" /></label>
       </div>
@@ -203,16 +195,16 @@
       <div class="session-editor-block">
         <span class="field-label">Запись о сессии</span>
         <div class="editor-toolbar session-toolbar" role="toolbar" aria-label="Форматирование записи сессии">
-          <button type="button" data-command="bold"><b>Ж</b></button>
-          <button type="button" data-command="italic"><i>К</i></button>
-          <button type="button" data-command="underline"><u>П</u></button>
+          <button type="button" data-command="bold"><b>B</b></button>
+          <button type="button" data-command="italic"><i>I</i></button>
+          <button type="button" data-command="underline"><u>U</u></button>
           <span class="toolbar-divider"></span>
-          <button type="button" data-block="h3">H3</button>
+          <button type="button" data-block="h3">H₃</button>
           <button type="button" data-block="p">¶</button>
-          <button type="button" data-command="insertUnorderedList">• список</button>
-          <button type="button" data-command="insertOrderedList">1. список</button>
+          <button type="button" data-command="insertUnorderedList">☷</button>
+          <button type="button" data-command="insertOrderedList">☰</button>
           <button type="button" data-block="blockquote">❝</button>
-          <button type="button" data-session-link>↗ ссылка</button>
+          <button type="button" data-session-link>↗</button>
           <button type="button" data-command="removeFormat">Tx</button>
         </div>
         <div class="rich-editor session-editor" id="sessionNotesEditor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Запись игрового дня…"></div>
@@ -221,30 +213,41 @@
       <div class="modal-actions split-actions">
         <button class="button button-danger is-hidden" id="deleteSessionButton" type="button">Удалить день</button>
         <div>
-          <button class="button button-ghost" type="button" data-close-modal>Отмена</button>
-          <button class="button button-primary" type="submit">Сохранить день</button>
+          <button class="button button-muted" type="button" data-close-modal>Отмена</button>
+          <button class="button button-primary" type="submit">Сохранить</button>
         </div>
       </div>
     </form>
   </section>
 
+  <div class="reader-backdrop is-hidden" id="sessionReaderBackdrop"></div>
+  <article class="session-reader is-hidden" id="sessionReader" role="dialog" aria-modal="true" aria-labelledby="readerTitle">
+    <div class="reader-topbar">
+      <button class="reader-back" id="readerCloseButton" type="button" aria-label="Закрыть">‹</button>
+      <strong id="readerTopTitle">Игровой день</strong>
+      <span aria-hidden="true">⋮</span>
+    </div>
+    <div class="reader-cover is-hidden" id="readerCover"></div>
+    <div class="reader-paper">
+      <p class="eyebrow" id="readerMeta"></p>
+      <h2 id="readerTitle"></h2>
+      <p class="reader-teaser is-hidden" id="readerTeaser"></p>
+      <div class="reader-text" id="readerText"></div>
+      <button class="text-action reader-edit" id="readerEditButton" type="button">✎ Редактировать</button>
+    </div>
+  </article>
+
   <div class="cloud-backdrop is-hidden" id="cloudBackdrop"></div>
   <section class="cloud-modal is-hidden" id="cloudModal" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
     <button class="cloud-close" id="cloudClose" type="button" aria-label="Закрыть">×</button>
     <p class="eyebrow">Синхронизация</p>
-    <h2 id="cloudTitle">Облако + локальная копия</h2>
-    <p>Все изменения сначала сохраняются на этом устройстве. Если сеть доступна и вы вошли в аккаунт, копия автоматически отправляется в облако.</p>
-    <label>
-      <span>E-mail</span>
-      <input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com" />
-    </label>
-    <label>
-      <span>Пароль</span>
-      <input id="cloudPassword" type="password" autocomplete="current-password" placeholder="Минимум 6 символов" />
-    </label>
+    <h2 id="cloudTitle">Облако и устройство</h2>
+    <p>Изменения всегда сначала сохраняются на этом устройстве. При наличии сети актуальная копия отправляется в облако.</p>
+    <label><span>E-mail</span><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com" /></label>
+    <label><span>Пароль</span><input id="cloudPassword" type="password" autocomplete="current-password" placeholder="Минимум 6 символов" /></label>
     <div class="cloud-modal-actions">
       <button class="button button-primary" id="cloudLogin" type="button">Войти</button>
-      <button class="button button-ghost" id="cloudRegister" type="button">Создать аккаунт</button>
+      <button class="button button-muted" id="cloudRegister" type="button">Создать аккаунт</button>
       <button class="button button-primary is-hidden" id="syncNow" type="button">Синхронизировать</button>
       <button class="button button-danger is-hidden" id="cloudLogout" type="button">Выйти</button>
     </div>
@@ -255,7 +258,6 @@
 
   <script src="./local-meta.js" defer></script>
   <script src="./sync.js" defer></script>
-  <script src="./session-view.js" defer></script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
