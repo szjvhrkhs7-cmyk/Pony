@@ -1,4 +1,4 @@
-const CACHE_NAME = 'seeker-chronicles-v8';
+const CACHE_NAME = 'seeker-chronicles-v9';
 const APP_SHELL = [
   './',
   './index.html',
@@ -7,7 +7,12 @@ const APP_SHELL = [
   './app.js',
   './local-meta.js',
   './sync.js',
-  './manifest.webmanifest'
+  './manifest.webmanifest',
+  './assets/fantasy-header.svg',
+  './assets/fantasy-card-1.svg',
+  './assets/fantasy-card-2.svg',
+  './assets/fantasy-card-3.svg',
+  './assets/fantasy-card-4.svg'
 ];
 
 self.addEventListener('install', (event) => {
