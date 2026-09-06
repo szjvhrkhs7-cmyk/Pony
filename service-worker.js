@@ -1,4 +1,4 @@
-const CACHE_NAME = 'seeker-chronicles-v3';
+const CACHE_NAME = 'seeker-chronicles-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -27,8 +27,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Supabase and other cross-origin requests are network-only. The local app shell
-  // remains available from cache when the device is offline.
   if (new URL(event.request.url).origin !== self.location.origin) return;
 
   event.respondWith(
