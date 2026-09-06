@@ -4,7 +4,7 @@
   "description": "Личная записная книжка игрока для кампаний и игровых сессий.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#17271f",
-  "theme_color": "#17271f",
+  "background_color": "#18080b",
+  "theme_color": "#220b10",
   "lang": "ru"
 }
