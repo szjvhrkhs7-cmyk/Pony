@@ -8,17 +8,21 @@ const state = {
   currentCampaignId: null,
   editingCampaignId: null,
   editingSessionId: null,
+  readerSessionId: null,
   pendingCoverBlob: null,
   pendingCoverRemoved: false,
   objectUrls: new Map(),
+  readerObjectUrl: null,
   saveTimer: null
 };
 
 const $ = (id) => document.getElementById(id);
 const els = {
+  homeScreen: $('homeScreen'),
   campaignsStrip: $('campaignsStrip'),
   workspace: $('workspace'),
   campaignsEmpty: $('campaignsEmpty'),
+  campaignScreenTitle: $('campaignScreenTitle'),
   campaignTitle: $('campaignTitle'),
   campaignSubtitle: $('campaignSubtitle'),
   campaignMeta: $('campaignMeta'),
@@ -31,8 +35,11 @@ const els = {
   sessionsGrid: $('sessionsGrid'),
   sessionsEmpty: $('sessionsEmpty'),
   newCampaignButton: $('newCampaignButton'),
+  homeNewCampaignButton: $('homeNewCampaignButton'),
   emptyNewCampaignButton: $('emptyNewCampaignButton'),
   editCampaignButton: $('editCampaignButton'),
+  campaignTopEditButton: $('campaignTopEditButton'),
+  backToGamesButton: $('backToGamesButton'),
   deleteCampaignButton: $('deleteCampaignButton'),
   newSessionButton: $('newSessionButton'),
   emptyNewSessionButton: $('emptyNewSessionButton'),
@@ -59,6 +66,16 @@ const els = {
   chooseCoverButton: $('chooseCoverButton'),
   removeCoverButton: $('removeCoverButton'),
   deleteSessionButton: $('deleteSessionButton'),
+  sessionReaderBackdrop: $('sessionReaderBackdrop'),
+  sessionReader: $('sessionReader'),
+  readerCloseButton: $('readerCloseButton'),
+  readerTopTitle: $('readerTopTitle'),
+  readerCover: $('readerCover'),
+  readerMeta: $('readerMeta'),
+  readerTitle: $('readerTitle'),
+  readerTeaser: $('readerTeaser'),
+  readerText: $('readerText'),
+  readerEditButton: $('readerEditButton'),
   toast: $('toast'),
   linkButton: $('linkButton')
 };
@@ -67,7 +84,7 @@ boot();
 
 function boot() {
   normalizeData();
-  state.currentCampaignId = state.data.lastCampaignId || state.data.campaigns[0]?.id || null;
+  state.currentCampaignId = null;
   bindEvents();
   render();
 
@@ -128,8 +145,11 @@ function normalizeData() {
 
 function bindEvents() {
   els.newCampaignButton.addEventListener('click', () => openCampaignModal());
+  els.homeNewCampaignButton.addEventListener('click', () => openCampaignModal());
   els.emptyNewCampaignButton.addEventListener('click', () => openCampaignModal());
   els.editCampaignButton.addEventListener('click', () => openCampaignModal(getCurrentCampaign()));
+  els.campaignTopEditButton.addEventListener('click', () => openCampaignModal(getCurrentCampaign()));
+  els.backToGamesButton.addEventListener('click', backToGames);
   els.deleteCampaignButton.addEventListener('click', deleteEditingCampaign);
   els.newSessionButton.addEventListener('click', () => openSessionModal());
   els.emptyNewSessionButton.addEventListener('click', () => openSessionModal());
@@ -141,8 +161,15 @@ function bindEvents() {
     button.addEventListener('click', closeModals);
   });
   els.modalBackdrop.addEventListener('click', closeModals);
+
+  els.readerCloseButton.addEventListener('click', closeSessionReader);
+  els.sessionReaderBackdrop.addEventListener('click', closeSessionReader);
+  els.readerEditButton.addEventListener('click', editReaderSession);
+
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeModals();
+    if (event.key !== 'Escape') return;
+    if (!els.sessionReader.classList.contains('is-hidden')) closeSessionReader();
+    else closeModals();
   });
 
   els.campaignJournal.addEventListener('input', () => scheduleCampaignTextSave('journal'));
@@ -157,6 +184,12 @@ function bindEvents() {
 
   els.chooseCoverButton.addEventListener('click', () => els.sessionCoverInput.click());
   els.coverPreview.addEventListener('click', () => els.sessionCoverInput.click());
+  els.coverPreview.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      els.sessionCoverInput.click();
+    }
+  });
   els.sessionCoverInput.addEventListener('change', () => handleCoverFile(els.sessionCoverInput.files?.[0]));
   els.removeCoverButton.addEventListener('click', removePendingCover);
 
@@ -221,14 +254,18 @@ function pastePlainText(event) {
 }
 
 function render() {
-  renderCampaignStrip();
+  releaseObjectUrls();
+  renderCampaignList();
+
   const campaign = getCurrentCampaign();
-  const hasCampaigns = Boolean(campaign);
-  els.workspace.classList.toggle('is-hidden', !hasCampaigns);
-  els.campaignsEmpty.classList.toggle('is-hidden', hasCampaigns);
+  const hasOpenCampaign = Boolean(campaign);
+  els.homeScreen.classList.toggle('is-hidden', hasOpenCampaign);
+  els.workspace.classList.toggle('is-hidden', !hasOpenCampaign);
+  els.campaignsEmpty.classList.toggle('is-hidden', state.data.campaigns.length > 0);
 
   if (!campaign) return;
 
+  els.campaignScreenTitle.textContent = campaign.name;
   els.campaignTitle.textContent = campaign.name;
   els.campaignSubtitle.textContent = campaign.subtitle || '—';
   els.campaignMeta.textContent = `${campaign.sessions.length} ${plural(campaign.sessions.length, 'запись', 'записи', 'записей')}`;
@@ -240,33 +277,59 @@ function render() {
   renderSessions(campaign);
 }
 
-function renderCampaignStrip() {
+function renderCampaignList() {
   els.campaignsStrip.replaceChildren();
   const fragment = document.createDocumentFragment();
 
   for (const campaign of state.data.campaigns) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = `campaign-card${campaign.id === state.currentCampaignId ? ' is-active' : ''}`;
+    button.className = 'campaign-card';
     const sessionCount = campaign.sessions.length;
-    button.innerHTML = `<span>${sessionCount} ${plural(sessionCount, 'день', 'дня', 'дней')}</span><strong></strong><small></small>`;
+    button.innerHTML = `
+      <span class="campaign-card-art" aria-hidden="true"></span>
+      <span class="campaign-card-copy">
+        <span>${sessionCount} ${plural(sessionCount, 'сессия', 'сессии', 'сессий')}</span>
+        <strong></strong>
+        <small>Открыть →</small>
+      </span>
+      <span class="campaign-card-arrow" aria-hidden="true">›</span>
+    `;
     button.querySelector('strong').textContent = campaign.name;
-    button.querySelector('small').textContent = campaign.subtitle || 'Открыть';
-    button.addEventListener('click', () => {
-      flushCampaignTextSave();
-      state.currentCampaignId = campaign.id;
-      state.data.lastCampaignId = campaign.id;
-      saveData();
-      render();
-    });
+    button.addEventListener('click', () => openCampaign(campaign.id));
     fragment.append(button);
+
+    const latest = [...campaign.sessions].sort((a, b) => sessionSortValue(b) - sessionSortValue(a))[0];
+    if (latest) {
+      getCoverBlob(latest.id).then((blob) => {
+        if (!blob || !button.isConnected) return;
+        const url = URL.createObjectURL(blob);
+        state.objectUrls.set(`campaign:${campaign.id}`, url);
+        button.querySelector('.campaign-card-art').style.backgroundImage = `linear-gradient(90deg, rgba(36,8,13,.14), rgba(36,8,13,.04)), url("${url}")`;
+      }).catch(() => {});
+    }
   }
 
   els.campaignsStrip.append(fragment);
 }
 
+function openCampaign(campaignId) {
+  flushCampaignTextSave();
+  state.currentCampaignId = campaignId;
+  state.data.lastCampaignId = campaignId;
+  saveData();
+  render();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function backToGames() {
+  flushCampaignTextSave();
+  state.currentCampaignId = null;
+  render();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
 async function renderSessions(campaign) {
-  releaseObjectUrls();
   els.sessionsGrid.replaceChildren();
   const sorted = [...campaign.sessions].sort((a, b) => sessionSortValue(b) - sessionSortValue(a));
   els.sessionsEmpty.classList.toggle('is-hidden', sorted.length > 0);
@@ -276,26 +339,99 @@ async function renderSessions(campaign) {
   for (const session of sorted) {
     const card = document.createElement('article');
     card.className = 'session-card';
-    card.innerHTML = `<button class="session-cover" type="button" aria-label="Открыть запись"></button><div class="session-card-body"><div class="session-card-meta"><span class="session-date"></span><span class="session-location"></span></div><h4></h4><p></p><div class="session-card-footer"><span>Игровой день</span><button class="session-card-open" type="button">Открыть →</button></div></div>`;
-    card.querySelector('.session-date').textContent = formatDate(session.date) || '—';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Открыть ${session.title}`);
+    card.innerHTML = `
+      <button class="session-cover" type="button" aria-label="Открыть запись"></button>
+      <div class="session-card-body">
+        <div class="session-card-meta"><span class="session-date"></span><span class="session-location"></span></div>
+        <h4></h4><p></p>
+        <div class="session-card-footer"><span>Игровой день</span><button class="session-card-open" type="button">Открыть →</button></div>
+      </div>
+    `;
+    card.querySelector('.session-date').textContent = formatDate(session.date) || 'Без даты';
     card.querySelector('.session-location').textContent = session.location || '';
     card.querySelector('h4').textContent = session.title;
-    card.querySelector('p').textContent = session.teaser || textFromHtml(session.notes).slice(0, 145) || '—';
+    card.querySelector('p').textContent = session.teaser || textFromHtml(session.notes).slice(0, 145) || 'Открыть запись';
 
-    const open = () => openSessionModal(session);
-    card.querySelector('.session-cover').addEventListener('click', open);
-    card.querySelector('.session-card-open').addEventListener('click', open);
+    const open = () => openSessionReader(session);
+    card.querySelector('.session-cover').addEventListener('click', (event) => {
+      event.stopPropagation();
+      open();
+    });
+    card.querySelector('.session-card-open').addEventListener('click', (event) => {
+      event.stopPropagation();
+      open();
+    });
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        open();
+      }
+    });
     fragment.append(card);
 
     getCoverBlob(session.id).then((blob) => {
       if (!blob || !card.isConnected) return;
       const url = URL.createObjectURL(blob);
-      state.objectUrls.set(session.id, url);
-      card.querySelector('.session-cover').style.backgroundImage = `linear-gradient(transparent 35%, rgba(16,17,13,.25)), url("${url}")`;
+      state.objectUrls.set(`session:${session.id}`, url);
+      card.querySelector('.session-cover').style.backgroundImage = `linear-gradient(transparent 45%, rgba(26,7,10,.24)), url("${url}")`;
     }).catch(() => {});
   }
 
   els.sessionsGrid.append(fragment);
+}
+
+async function openSessionReader(session) {
+  state.readerSessionId = session.id;
+  els.readerTopTitle.textContent = session.title;
+  els.readerTitle.textContent = session.title;
+
+  const meta = [formatDate(session.date), session.location].filter(Boolean);
+  els.readerMeta.textContent = meta.join(' · ') || 'Игровой день';
+
+  const teaser = session.teaser.trim();
+  els.readerTeaser.textContent = teaser;
+  els.readerTeaser.classList.toggle('is-hidden', !teaser);
+  els.readerText.innerHTML = sanitizeHtml(session.notes || '');
+
+  clearReaderCover();
+  const blob = await getCoverBlob(session.id).catch(() => null);
+  if (blob) {
+    state.readerObjectUrl = URL.createObjectURL(blob);
+    els.readerCover.style.backgroundImage = `linear-gradient(transparent 45%, rgba(28,7,11,.28)), url("${state.readerObjectUrl}")`;
+    els.readerCover.classList.remove('is-hidden');
+  }
+
+  els.sessionReaderBackdrop.classList.remove('is-hidden');
+  els.sessionReader.classList.remove('is-hidden');
+  document.body.style.overflow = 'hidden';
+  els.sessionReader.scrollTop = 0;
+}
+
+function closeSessionReader() {
+  els.sessionReaderBackdrop.classList.add('is-hidden');
+  els.sessionReader.classList.add('is-hidden');
+  state.readerSessionId = null;
+  clearReaderCover();
+  document.body.style.overflow = '';
+}
+
+function clearReaderCover() {
+  if (state.readerObjectUrl) URL.revokeObjectURL(state.readerObjectUrl);
+  state.readerObjectUrl = null;
+  els.readerCover.style.backgroundImage = '';
+  els.readerCover.classList.add('is-hidden');
+}
+
+function editReaderSession() {
+  const campaign = getCurrentCampaign();
+  const session = campaign?.sessions.find((item) => item.id === state.readerSessionId);
+  if (!session) return;
+  closeSessionReader();
+  openSessionModal(session);
 }
 
 function openCampaignModal(campaign = null) {
@@ -357,8 +493,8 @@ async function deleteEditingCampaign() {
   }
 
   state.data.campaigns = state.data.campaigns.filter((item) => item.id !== campaign.id);
-  state.currentCampaignId = state.data.campaigns[0]?.id || null;
-  state.data.lastCampaignId = state.currentCampaignId;
+  state.currentCampaignId = null;
+  state.data.lastCampaignId = state.data.campaigns[0]?.id || null;
   saveData();
   closeModals();
   render();
@@ -500,18 +636,20 @@ async function handleCoverFile(file) {
 }
 
 async function optimizeImage(file) {
-  const bitmap = await createImageBitmap(file);
+  const source = await loadImageSource(file);
   const maxWidth = 1600;
   const maxHeight = 1000;
-  const scale = Math.min(1, maxWidth / bitmap.width, maxHeight / bitmap.height);
-  const width = Math.max(1, Math.round(bitmap.width * scale));
-  const height = Math.max(1, Math.round(bitmap.height * scale));
+  const sourceWidth = source.width;
+  const sourceHeight = source.height;
+  const scale = Math.min(1, maxWidth / sourceWidth, maxHeight / sourceHeight);
+  const width = Math.max(1, Math.round(sourceWidth * scale));
+  const height = Math.max(1, Math.round(sourceHeight * scale));
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext('2d', { alpha: false });
-  context.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close();
+  context.drawImage(source.drawable, 0, 0, width, height);
+  source.dispose();
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(
@@ -522,11 +660,37 @@ async function optimizeImage(file) {
   });
 }
 
+async function loadImageSource(file) {
+  if ('createImageBitmap' in window) {
+    const bitmap = await createImageBitmap(file);
+    return {
+      drawable: bitmap,
+      width: bitmap.width,
+      height: bitmap.height,
+      dispose: () => bitmap.close()
+    };
+  }
+
+  const url = URL.createObjectURL(file);
+  const image = new Image();
+  await new Promise((resolve, reject) => {
+    image.onload = resolve;
+    image.onerror = reject;
+    image.src = url;
+  });
+  return {
+    drawable: image,
+    width: image.naturalWidth,
+    height: image.naturalHeight,
+    dispose: () => URL.revokeObjectURL(url)
+  };
+}
+
 function showCoverPreview(blob) {
   if (els.coverPreview.dataset.objectUrl) URL.revokeObjectURL(els.coverPreview.dataset.objectUrl);
   const url = URL.createObjectURL(blob);
   els.coverPreview.dataset.objectUrl = url;
-  els.coverPreview.style.backgroundImage = `linear-gradient(transparent 30%, rgba(8,11,9,.22)), url("${url}")`;
+  els.coverPreview.style.backgroundImage = `linear-gradient(transparent 35%, rgba(31,7,11,.22)), url("${url}")`;
   els.coverPreview.classList.add('has-image');
   els.removeCoverButton.classList.remove('is-hidden');
 }
@@ -742,7 +906,7 @@ async function importBackup(event) {
     state.data = parsed;
     normalizeData();
     for (const [id, blob] of covers) await putCoverBlob(id, blob);
-    state.currentCampaignId = state.data.lastCampaignId || state.data.campaigns[0]?.id || null;
+    state.currentCampaignId = null;
     saveData();
     render();
     showToast('Резервная копия восстановлена');
