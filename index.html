@@ -1,159 +1,205 @@
 <!doctype html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#4b1720" />
-    <meta
-      name="description"
-      content="Мобильное приложение для записи заказов по меню Salden's Taphouse на Мясницкой."
-    />
-    <title>Salden’s — заказы</title>
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <button class="brand" id="brandButton" type="button" aria-label="Открыть меню">
-        <span class="brand-mark">S</span>
-        <span class="brand-copy">
-          <strong>SALDEN’S</strong>
-          <small>Мясницкая · заказы</small>
-        </span>
-      </button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#15231d" />
+  <meta name="description" content="Хроники Искателя — личная записная книжка игрока для настольных ролевых кампаний." />
+  <title>Хроники Искателя</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Навигация">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div>
+          <strong>Хроники Искателя</strong>
+          <span>записная книжка игрока</span>
+        </div>
+      </div>
 
-      <nav class="tabs" aria-label="Разделы приложения">
-        <button class="tab is-active" id="menuTab" type="button">Меню</button>
-        <button class="tab" id="ordersTab" type="button">
-          Заказы
-          <span class="badge is-hidden" id="ordersBadge">0</span>
+      <nav class="nav-list">
+        <button class="nav-item is-active" type="button" aria-current="page">
+          <span aria-hidden="true">◈</span>
+          <span>Кампании</span>
         </button>
       </nav>
 
-      <button class="cart-button" id="cartButton" type="button" aria-label="Открыть текущий заказ">
-        <span>Заказ</span>
-        <b id="cartBadge">0</b>
-      </button>
-    </header>
-
-    <main>
-      <section id="menuView">
-        <section class="hero">
-          <div class="hero-content">
-            <p>Salden’s Taphouse · Мясницкая</p>
-            <h1>Быстрый заказ<br />без блокнота</h1>
-            <span>Все позиции и цены в одном месте</span>
-          </div>
-        </section>
-
-        <section class="catalog">
-          <div class="tools">
-            <label class="search">
-              <span aria-hidden="true">⌕</span>
-              <input id="searchInput" type="search" placeholder="Найти блюдо" autocomplete="off" />
-            </label>
-            <div class="categories" id="categories" aria-label="Категории меню"></div>
-          </div>
-
-          <div class="section-heading">
-            <div>
-              <p>Каталог</p>
-              <h2 id="categoryTitle">Всё меню</h2>
-            </div>
-            <span id="itemsCount"></span>
-          </div>
-
-          <div class="menu-grid" id="menuGrid"></div>
-          <div class="empty-state is-hidden" id="menuEmpty">
-            <strong>Ничего не найдено</strong>
-            <span>Попробуйте изменить запрос или выбрать другую категорию.</span>
-          </div>
-        </section>
-      </section>
-
-      <section class="orders-view is-hidden" id="ordersView">
-        <div class="orders-hero">
-          <div>
-            <p>Рабочая доска</p>
-            <h1>Заказы столов</h1>
-          </div>
-          <button class="secondary-button" id="clearServedButton" type="button">
-            Убрать поданные
-          </button>
-        </div>
-        <p class="storage-note">
-          Заказы сохраняются только на этом устройстве и доступны без входа в аккаунт.
-        </p>
-        <div class="order-list" id="orderList"></div>
-        <div class="empty-state" id="ordersEmpty">
-          <strong>Заказов пока нет</strong>
-          <span>Соберите первый заказ из меню — он появится здесь.</span>
-          <button class="primary-button" id="emptyMenuButton" type="button">Открыть меню</button>
-        </div>
-      </section>
-    </main>
-
-    <div class="backdrop is-hidden" id="backdrop"></div>
-
-    <aside class="drawer" id="cartDrawer" aria-hidden="true" aria-label="Текущий заказ">
-      <div class="drawer-header">
-        <div>
-          <p>Текущий заказ</p>
-          <h2>Корзина</h2>
-        </div>
-        <button class="icon-button" id="closeCartButton" type="button" aria-label="Закрыть">×</button>
-      </div>
-      <div class="cart-lines" id="cartLines"></div>
-      <div class="empty-state compact" id="cartEmpty">
-        <strong>Корзина пуста</strong>
-        <span>Добавьте позиции из меню.</span>
-      </div>
-      <div class="drawer-footer">
-        <div class="total-row">
-          <span>Итого</span>
-          <strong id="cartTotal">0 ₽</strong>
-        </div>
-        <button class="primary-button wide" id="checkoutButton" type="button">
-          Оформить заказ
-        </button>
+      <div class="sidebar-note">
+        <span>Пока одна глава:</span>
+        <strong>игры, сессии и заметки.</strong>
+        <p>Остальные разделы добавим по частям.</p>
       </div>
     </aside>
 
-    <section class="modal is-hidden" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
-      <button class="icon-button modal-close" id="closeCheckoutButton" type="button" aria-label="Закрыть">×</button>
-      <p>Последний шаг</p>
-      <h2 id="checkoutTitle">Записать заказ</h2>
-      <form id="checkoutForm">
-        <label>
-          <span>Номер стола *</span>
-          <input id="tableInput" name="table" required maxlength="12" inputmode="numeric" placeholder="Например, 7" />
-        </label>
-        <label>
-          <span>Имя гостя</span>
-          <input id="guestInput" name="guest" maxlength="60" placeholder="Необязательно" />
-        </label>
-        <label>
-          <span>Комментарий</span>
-          <textarea id="notesInput" name="notes" maxlength="240" rows="3" placeholder="Без лука, аллергия, подать позже…"></textarea>
-        </label>
-        <div class="checkout-summary">
-          <span id="checkoutItems"></span>
-          <strong id="checkoutTotal"></strong>
+    <main class="main-area">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Личный архив приключений</p>
+          <h1>Мои кампании</h1>
         </div>
-        <button class="primary-button wide" type="submit">Сохранить заказ</button>
-      </form>
-    </section>
+        <div class="topbar-actions">
+          <button class="button button-ghost" id="exportButton" type="button">Экспорт</button>
+          <label class="button button-ghost file-button">
+            Импорт
+            <input id="importInput" type="file" accept="application/json" hidden />
+          </label>
+          <button class="button button-primary" id="newCampaignButton" type="button">+ Новая игра</button>
+        </div>
+      </header>
 
-    <div class="toast is-hidden" id="toast" role="status" aria-live="polite"></div>
+      <section class="campaigns-strip" id="campaignsStrip" aria-label="Список игр"></section>
 
-    <nav class="mobile-nav" aria-label="Мобильная навигация">
-      <button class="is-active" id="mobileMenuTab" type="button">Меню</button>
-      <button id="mobileOrdersTab" type="button">
-        Заказы <span class="badge is-hidden" id="mobileOrdersBadge">0</span>
-      </button>
-      <button id="mobileCartButton" type="button">Корзина <span class="badge" id="mobileCartBadge">0</span></button>
-    </nav>
+      <section class="workspace is-hidden" id="workspace">
+        <article class="campaign-hero parchment-panel">
+          <div class="campaign-heading">
+            <div>
+              <p class="eyebrow" id="campaignMeta">Кампания</p>
+              <h2 id="campaignTitle"></h2>
+              <p class="campaign-subtitle" id="campaignSubtitle"></p>
+            </div>
+            <button class="icon-text-button" id="editCampaignButton" type="button">✎ Редактировать</button>
+          </div>
 
-    <script type="module" src="./app.js"></script>
-  </body>
+          <div class="campaign-facts">
+            <div>
+              <span>Отряд</span>
+              <strong id="campaignParty"></strong>
+            </div>
+            <div>
+              <span>Текущая цель</span>
+              <strong id="campaignGoal"></strong>
+            </div>
+            <div>
+              <span>Последняя игра</span>
+              <strong id="campaignLastSession"></strong>
+            </div>
+          </div>
+        </article>
+
+        <div class="workspace-grid">
+          <section class="parchment-panel journal-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Общая запись</p>
+                <h3>Хроника кампании</h3>
+              </div>
+              <span class="save-state" id="journalSaveState">Сохранено</span>
+            </div>
+
+            <div class="editor-toolbar" role="toolbar" aria-label="Форматирование текста">
+              <button type="button" data-command="bold" title="Жирный"><b>Ж</b></button>
+              <button type="button" data-command="italic" title="Курсив"><i>К</i></button>
+              <button type="button" data-command="underline" title="Подчёркивание"><u>П</u></button>
+              <span class="toolbar-divider"></span>
+              <button type="button" data-block="h2" title="Заголовок">H2</button>
+              <button type="button" data-block="h3" title="Подзаголовок">H3</button>
+              <button type="button" data-block="p" title="Обычный текст">¶</button>
+              <span class="toolbar-divider"></span>
+              <button type="button" data-command="insertUnorderedList" title="Маркированный список">• список</button>
+              <button type="button" data-command="insertOrderedList" title="Нумерованный список">1. список</button>
+              <button type="button" data-block="blockquote" title="Цитата">❝</button>
+              <span class="toolbar-divider"></span>
+              <button type="button" id="linkButton" title="Добавить ссылку">↗ ссылка</button>
+              <button type="button" data-command="removeFormat" title="Очистить форматирование">Tx</button>
+            </div>
+
+            <div class="rich-editor" id="campaignJournal" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте здесь общую историю кампании: важные события, планы, догадки, имена, правила мира…"></div>
+          </section>
+
+          <aside class="parchment-panel quick-notes-panel">
+            <div class="section-heading compact-heading">
+              <div>
+                <p class="eyebrow">Перед следующей игрой</p>
+                <h3>Не забыть</h3>
+              </div>
+            </div>
+            <textarea id="quickNotes" rows="10" maxlength="3000" placeholder="Например: спросить трактирщика о старой башне…"></textarea>
+            <p class="field-hint">Сохраняется автоматически.</p>
+          </aside>
+        </div>
+
+        <section class="sessions-section">
+          <div class="section-heading sessions-heading">
+            <div>
+              <p class="eyebrow">Дневник приключения</p>
+              <h3>Дни игры</h3>
+            </div>
+            <button class="button button-primary" id="newSessionButton" type="button">+ Добавить день</button>
+          </div>
+
+          <div class="sessions-grid" id="sessionsGrid"></div>
+          <div class="empty-state is-hidden" id="sessionsEmpty">
+            <div class="empty-icon" aria-hidden="true">✧</div>
+            <h3>Пока нет ни одной записи</h3>
+            <p>Добавьте первый игровой день, загрузите обложку и запишите, что произошло.</p>
+            <button class="button button-primary" id="emptyNewSessionButton" type="button">Добавить первый день</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="empty-campaigns parchment-panel" id="campaignsEmpty">
+        <div class="empty-icon" aria-hidden="true">✦</div>
+        <h2>Начните новую хронику</h2>
+        <p>Создайте первую игру. Позже внутри неё появятся отдельные дни с обложками и заметками.</p>
+        <button class="button button-primary" id="emptyNewCampaignButton" type="button">+ Создать игру</button>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop is-hidden" id="modalBackdrop"></div>
+
+  <section class="modal is-hidden" id="campaignModal" role="dialog" aria-modal="true" aria-labelledby="campaignModalTitle">
+    <button class="modal-close" type="button" data-close-modal aria-label="Закрыть">×</button>
+    <p class="eyebrow">Кампания</p>
+    <h2 id="campaignModalTitle">Новая игра</h2>
+    <form id="campaignForm">
+      <label><span>Название *</span><input id="campaignNameInput" required maxlength="80" placeholder="Например, Пепел и Приливы" /></label>
+      <label><span>Короткое описание</span><input id="campaignSubtitleInput" maxlength="150" placeholder="Море, древние руины и тайны прошлого" /></label>
+      <div class="form-columns">
+        <label><span>Название отряда</span><input id="campaignPartyInput" maxlength="80" placeholder="Солёные Псы" /></label>
+        <label><span>Текущая цель</span><input id="campaignGoalInput" maxlength="160" placeholder="Найти затонувшую библиотеку" /></label>
+      </div>
+      <div class="modal-actions"><button class="button button-ghost" type="button" data-close-modal>Отмена</button><button class="button button-primary" type="submit">Сохранить</button></div>
+    </form>
+  </section>
+
+  <section class="modal session-modal is-hidden" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionModalTitle">
+    <button class="modal-close" type="button" data-close-modal aria-label="Закрыть">×</button>
+    <p class="eyebrow">День игры</p>
+    <h2 id="sessionModalTitle">Новая запись</h2>
+    <form id="sessionForm">
+      <div class="cover-uploader" id="coverUploader">
+        <input id="sessionCoverInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden />
+        <div class="cover-preview" id="coverPreview">
+          <div class="cover-placeholder"><span aria-hidden="true">✦</span><strong>Обложка игрового дня</strong><small>Нажмите или перетащите сюда JPG, PNG, WEBP или AVIF</small></div>
+        </div>
+        <div class="cover-actions"><button class="button button-ghost" id="chooseCoverButton" type="button">Выбрать картинку</button><button class="button button-danger is-hidden" id="removeCoverButton" type="button">Удалить обложку</button></div>
+      </div>
+
+      <div class="form-columns three-columns">
+        <label><span>Название дня *</span><input id="sessionTitleInput" required maxlength="100" placeholder="Шёпот в гавани" /></label>
+        <label><span>Дата</span><input id="sessionDateInput" type="date" /></label>
+        <label><span>Место</span><input id="sessionLocationInput" maxlength="100" placeholder="Золотая Бухта" /></label>
+      </div>
+
+      <label><span>Короткая строка для карточки</span><input id="sessionTeaserInput" maxlength="180" placeholder="Нашли старую карту и услышали имя, которое лучше было не произносить." /></label>
+
+      <div class="session-editor-block">
+        <span class="field-label">Запись о сессии</span>
+        <div class="editor-toolbar session-toolbar" role="toolbar" aria-label="Форматирование записи сессии">
+          <button type="button" data-command="bold"><b>Ж</b></button><button type="button" data-command="italic"><i>К</i></button><button type="button" data-command="underline"><u>П</u></button><span class="toolbar-divider"></span><button type="button" data-block="h3">H3</button><button type="button" data-block="p">¶</button><button type="button" data-command="insertUnorderedList">• список</button><button type="button" data-command="insertOrderedList">1. список</button><button type="button" data-block="blockquote">❝</button><button type="button" data-session-link>↗ ссылка</button><button type="button" data-command="removeFormat">Tx</button>
+        </div>
+        <div class="rich-editor session-editor" id="sessionNotesEditor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Что произошло? Кого встретили? Какие зацепки появились?"></div>
+      </div>
+
+      <div class="modal-actions split-actions"><button class="button button-danger is-hidden" id="deleteSessionButton" type="button">Удалить день</button><div><button class="button button-ghost" type="button" data-close-modal>Отмена</button><button class="button button-primary" type="submit">Сохранить день</button></div></div>
+    </form>
+  </section>
+
+  <div class="toast is-hidden" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body>
 </html>

@@ -1,10 +1,10 @@
 {
-  "name": "Salden’s — заказы",
-  "short_name": "Salden’s",
-  "description": "Запись заказов по меню Salden’s Taphouse",
+  "name": "Хроники Искателя",
+  "short_name": "Хроники",
+  "description": "Личная записная книжка игрока для кампаний и игровых сессий.",
   "start_url": "./",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#f4efe7",
-  "theme_color": "#4b1720"
+  "background_color": "#17271f",
+  "theme_color": "#17271f",
+  "lang": "ru"
 }
