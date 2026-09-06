@@ -1,0 +1,254 @@
+:root {
+  --ui-scale: 1;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: none;
+  overflow-x: hidden;
+  background: #ead8b4;
+}
+
+.app-shell {
+  width: calc(100% / var(--ui-scale));
+  max-width: none !important;
+  margin: 0 !important;
+  min-height: calc(100vh / var(--ui-scale));
+  zoom: var(--ui-scale);
+  box-shadow: none !important;
+}
+
+.main-area {
+  width: 100%;
+}
+
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scale-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid rgba(76,57,31,.24);
+  border-radius: 10px;
+  color: #5f503d;
+  background: rgba(255,251,241,.38);
+  white-space: nowrap;
+}
+
+.scale-control span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scale-control select {
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cloud-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cloud-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: #85745b;
+  box-shadow: 0 0 0 3px rgba(133,116,91,.12);
+}
+
+.cloud-button[data-mode='cloud'] .cloud-dot { background: #3f7456; box-shadow: 0 0 0 3px rgba(63,116,86,.14); }
+.cloud-button[data-mode='syncing'] .cloud-dot { background: #b3893f; animation: cloudPulse 1s infinite alternate; }
+.cloud-button[data-mode='offline'] .cloud-dot { background: #9c7440; }
+.cloud-button[data-mode='error'] .cloud-dot { background: #9a4439; }
+
+@keyframes cloudPulse {
+  from { opacity: .45; transform: scale(.85); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+.cloud-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 78;
+  background: rgba(9,13,10,.66);
+  backdrop-filter: blur(5px);
+}
+
+.cloud-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 80;
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  padding: 28px;
+  border: 1px solid rgba(215,182,112,.44);
+  border-radius: 18px;
+  color: #241d16;
+  background: linear-gradient(rgba(248,237,211,.99), rgba(233,211,168,.99));
+  box-shadow: 0 30px 90px rgba(0,0,0,.5);
+}
+
+.cloud-modal h2 {
+  margin: 0 44px 8px 0;
+  font-size: 32px;
+}
+
+.cloud-modal > p {
+  color: #705f49;
+  line-height: 1.5;
+}
+
+.cloud-modal label {
+  display: block;
+  margin-top: 14px;
+}
+
+.cloud-modal label span {
+  display: block;
+  margin-bottom: 6px;
+  color: #685840;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cloud-modal input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(91,67,35,.22);
+  border-radius: 9px;
+  color: #241d16;
+  background: rgba(255,253,245,.72);
+  font: inherit;
+}
+
+.cloud-modal input:disabled {
+  opacity: .58;
+}
+
+.cloud-modal-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.cloud-sync-note {
+  margin-top: 18px;
+  padding: 13px 14px;
+  border: 1px solid rgba(71,91,66,.18);
+  border-radius: 10px;
+  color: #53624f;
+  background: rgba(49,83,61,.07);
+  line-height: 1.45;
+  font-size: 13px;
+}
+
+.cloud-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  color: #68563f;
+  background: rgba(75,55,31,.07);
+  font-size: 26px;
+}
+
+@supports not (zoom: 1) {
+  .app-shell {
+    width: 100%;
+    min-height: 100vh;
+    zoom: 1;
+  }
+}
+
+@media (min-width: 1800px) {
+  .main-area {
+    padding-left: clamp(42px, 4vw, 86px);
+    padding-right: clamp(42px, 4vw, 86px);
+  }
+  .sessions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --ui-scale: 1;
+  }
+
+  .app-shell {
+    width: 100%;
+    min-height: 100dvh;
+    zoom: 1;
+  }
+
+  .topbar-tools,
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .topbar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topbar-actions .button,
+  .cloud-button,
+  .scale-control {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .new-game-action {
+    grid-column: 1 / -1;
+  }
+
+  .cloud-modal {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 88dvh;
+    transform: none;
+    padding: 24px 17px calc(24px + env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0;
+  }
+
+  .cloud-modal input,
+  .cloud-modal button,
+  .scale-control select {
+    font-size: 16px;
+  }
+
+  .cloud-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cloud-modal-actions .button {
+    width: 100%;
+  }
+}
