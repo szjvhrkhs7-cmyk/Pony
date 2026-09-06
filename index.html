@@ -8,6 +8,7 @@
   <title>Хроники Искателя</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./mobile.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -23,22 +24,16 @@
       <nav class="nav-list">
         <button class="nav-item is-active" type="button" aria-current="page">
           <span aria-hidden="true">◈</span>
-          <span>Кампании</span>
+          <span>Игры</span>
         </button>
       </nav>
-
-      <div class="sidebar-note">
-        <span>Пока одна глава:</span>
-        <strong>игры, сессии и заметки.</strong>
-        <p>Остальные разделы добавим по частям.</p>
-      </div>
     </aside>
 
     <main class="main-area">
       <header class="topbar">
         <div>
           <p class="eyebrow">Личный архив приключений</p>
-          <h1>Мои кампании</h1>
+          <h1>Игры</h1>
         </div>
         <div class="topbar-actions">
           <button class="button button-ghost" id="exportButton" type="button">Экспорт</button>
@@ -56,7 +51,7 @@
         <article class="campaign-hero parchment-panel">
           <div class="campaign-heading">
             <div>
-              <p class="eyebrow" id="campaignMeta">Кампания</p>
+              <p class="eyebrow" id="campaignMeta"></p>
               <h2 id="campaignTitle"></h2>
               <p class="campaign-subtitle" id="campaignSubtitle"></p>
             </div>
@@ -84,7 +79,7 @@
             <div class="section-heading">
               <div>
                 <p class="eyebrow">Общая запись</p>
-                <h3>Хроника кампании</h3>
+                <h3>Хроника игры</h3>
               </div>
               <span class="save-state" id="journalSaveState">Сохранено</span>
             </div>
@@ -106,7 +101,7 @@
               <button type="button" data-command="removeFormat" title="Очистить форматирование">Tx</button>
             </div>
 
-            <div class="rich-editor" id="campaignJournal" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте здесь общую историю кампании: важные события, планы, догадки, имена, правила мира…"></div>
+            <div class="rich-editor" id="campaignJournal" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте сюда всё, что хотите сохранить по этой игре…"></div>
           </section>
 
           <aside class="parchment-panel quick-notes-panel">
@@ -116,7 +111,7 @@
                 <h3>Не забыть</h3>
               </div>
             </div>
-            <textarea id="quickNotes" rows="10" maxlength="3000" placeholder="Например: спросить трактирщика о старой башне…"></textarea>
+            <textarea id="quickNotes" rows="10" maxlength="3000" placeholder="Короткие напоминания…"></textarea>
             <p class="field-hint">Сохраняется автоматически.</p>
           </aside>
         </div>
@@ -133,17 +128,17 @@
           <div class="sessions-grid" id="sessionsGrid"></div>
           <div class="empty-state is-hidden" id="sessionsEmpty">
             <div class="empty-icon" aria-hidden="true">✧</div>
-            <h3>Пока нет ни одной записи</h3>
-            <p>Добавьте первый игровой день, загрузите обложку и запишите, что произошло.</p>
-            <button class="button button-primary" id="emptyNewSessionButton" type="button">Добавить первый день</button>
+            <h3>Здесь пока пусто</h3>
+            <p>Добавьте игровой день, если хотите сохранить отдельную запись и обложку.</p>
+            <button class="button button-primary" id="emptyNewSessionButton" type="button">Добавить день</button>
           </div>
         </section>
       </section>
 
       <section class="empty-campaigns parchment-panel" id="campaignsEmpty">
         <div class="empty-icon" aria-hidden="true">✦</div>
-        <h2>Начните новую хронику</h2>
-        <p>Создайте первую игру. Позже внутри неё появятся отдельные дни с обложками и заметками.</p>
+        <h2>Здесь пока пусто</h2>
+        <p>Создайте первую игру. Название, описание и все записи вы заполните сами.</p>
         <button class="button button-primary" id="emptyNewCampaignButton" type="button">+ Создать игру</button>
       </section>
     </main>
@@ -153,49 +148,74 @@
 
   <section class="modal is-hidden" id="campaignModal" role="dialog" aria-modal="true" aria-labelledby="campaignModalTitle">
     <button class="modal-close" type="button" data-close-modal aria-label="Закрыть">×</button>
-    <p class="eyebrow">Кампания</p>
+    <p class="eyebrow">Игра</p>
     <h2 id="campaignModalTitle">Новая игра</h2>
     <form id="campaignForm">
-      <label><span>Название *</span><input id="campaignNameInput" required maxlength="80" placeholder="Например, Пепел и Приливы" /></label>
-      <label><span>Короткое описание</span><input id="campaignSubtitleInput" maxlength="150" placeholder="Море, древние руины и тайны прошлого" /></label>
+      <label><span>Название *</span><input id="campaignNameInput" required maxlength="80" placeholder="Название игры" /></label>
+      <label><span>Короткое описание</span><input id="campaignSubtitleInput" maxlength="150" placeholder="Необязательно" /></label>
       <div class="form-columns">
-        <label><span>Название отряда</span><input id="campaignPartyInput" maxlength="80" placeholder="Солёные Псы" /></label>
-        <label><span>Текущая цель</span><input id="campaignGoalInput" maxlength="160" placeholder="Найти затонувшую библиотеку" /></label>
+        <label><span>Отряд</span><input id="campaignPartyInput" maxlength="80" placeholder="Необязательно" /></label>
+        <label><span>Текущая цель</span><input id="campaignGoalInput" maxlength="160" placeholder="Необязательно" /></label>
       </div>
-      <div class="modal-actions"><button class="button button-ghost" type="button" data-close-modal>Отмена</button><button class="button button-primary" type="submit">Сохранить</button></div>
+      <div class="modal-actions split-actions">
+        <button class="button button-danger is-hidden" id="deleteCampaignButton" type="button">Удалить игру</button>
+        <div>
+          <button class="button button-ghost" type="button" data-close-modal>Отмена</button>
+          <button class="button button-primary" type="submit">Сохранить</button>
+        </div>
+      </div>
     </form>
   </section>
 
   <section class="modal session-modal is-hidden" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionModalTitle">
     <button class="modal-close" type="button" data-close-modal aria-label="Закрыть">×</button>
     <p class="eyebrow">День игры</p>
-    <h2 id="sessionModalTitle">Новая запись</h2>
+    <h2 id="sessionModalTitle">Новый игровой день</h2>
     <form id="sessionForm">
       <div class="cover-uploader" id="coverUploader">
         <input id="sessionCoverInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden />
         <div class="cover-preview" id="coverPreview">
-          <div class="cover-placeholder"><span aria-hidden="true">✦</span><strong>Обложка игрового дня</strong><small>Нажмите или перетащите сюда JPG, PNG, WEBP или AVIF</small></div>
+          <div class="cover-placeholder"><span aria-hidden="true">✦</span><strong>Обложка игрового дня</strong><small>Нажмите или перетащите сюда картинку</small></div>
         </div>
-        <div class="cover-actions"><button class="button button-ghost" id="chooseCoverButton" type="button">Выбрать картинку</button><button class="button button-danger is-hidden" id="removeCoverButton" type="button">Удалить обложку</button></div>
+        <div class="cover-actions">
+          <button class="button button-ghost" id="chooseCoverButton" type="button">Выбрать картинку</button>
+          <button class="button button-danger is-hidden" id="removeCoverButton" type="button">Удалить обложку</button>
+        </div>
       </div>
 
       <div class="form-columns three-columns">
-        <label><span>Название дня *</span><input id="sessionTitleInput" required maxlength="100" placeholder="Шёпот в гавани" /></label>
+        <label><span>Название дня *</span><input id="sessionTitleInput" required maxlength="100" placeholder="Название" /></label>
         <label><span>Дата</span><input id="sessionDateInput" type="date" /></label>
-        <label><span>Место</span><input id="sessionLocationInput" maxlength="100" placeholder="Золотая Бухта" /></label>
+        <label><span>Место</span><input id="sessionLocationInput" maxlength="100" placeholder="Необязательно" /></label>
       </div>
 
-      <label><span>Короткая строка для карточки</span><input id="sessionTeaserInput" maxlength="180" placeholder="Нашли старую карту и услышали имя, которое лучше было не произносить." /></label>
+      <label><span>Короткое описание</span><input id="sessionTeaserInput" maxlength="180" placeholder="Необязательно" /></label>
 
       <div class="session-editor-block">
         <span class="field-label">Запись о сессии</span>
         <div class="editor-toolbar session-toolbar" role="toolbar" aria-label="Форматирование записи сессии">
-          <button type="button" data-command="bold"><b>Ж</b></button><button type="button" data-command="italic"><i>К</i></button><button type="button" data-command="underline"><u>П</u></button><span class="toolbar-divider"></span><button type="button" data-block="h3">H3</button><button type="button" data-block="p">¶</button><button type="button" data-command="insertUnorderedList">• список</button><button type="button" data-command="insertOrderedList">1. список</button><button type="button" data-block="blockquote">❝</button><button type="button" data-session-link>↗ ссылка</button><button type="button" data-command="removeFormat">Tx</button>
+          <button type="button" data-command="bold"><b>Ж</b></button>
+          <button type="button" data-command="italic"><i>К</i></button>
+          <button type="button" data-command="underline"><u>П</u></button>
+          <span class="toolbar-divider"></span>
+          <button type="button" data-block="h3">H3</button>
+          <button type="button" data-block="p">¶</button>
+          <button type="button" data-command="insertUnorderedList">• список</button>
+          <button type="button" data-command="insertOrderedList">1. список</button>
+          <button type="button" data-block="blockquote">❝</button>
+          <button type="button" data-session-link>↗ ссылка</button>
+          <button type="button" data-command="removeFormat">Tx</button>
         </div>
-        <div class="rich-editor session-editor" id="sessionNotesEditor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Что произошло? Кого встретили? Какие зацепки появились?"></div>
+        <div class="rich-editor session-editor" id="sessionNotesEditor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Запись игрового дня…"></div>
       </div>
 
-      <div class="modal-actions split-actions"><button class="button button-danger is-hidden" id="deleteSessionButton" type="button">Удалить день</button><div><button class="button button-ghost" type="button" data-close-modal>Отмена</button><button class="button button-primary" type="submit">Сохранить день</button></div></div>
+      <div class="modal-actions split-actions">
+        <button class="button button-danger is-hidden" id="deleteSessionButton" type="button">Удалить день</button>
+        <div>
+          <button class="button button-ghost" type="button" data-close-modal>Отмена</button>
+          <button class="button button-primary" type="submit">Сохранить день</button>
+        </div>
+      </div>
     </form>
   </section>
 
