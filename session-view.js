@@ -1,8 +1,26 @@
 (() => {
   'use strict';
 
+  if (!document.querySelector('link[data-design-v2]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = './design-v2.css';
+    link.dataset.designV2 = 'true';
+    document.head.append(link);
+  }
+
+  const theme = document.querySelector('meta[name="theme-color"]');
+  if (theme) theme.content = '#220b10';
+
+  if (!document.querySelector('script[data-ui-v2]')) {
+    const script = document.createElement('script');
+    script.src = './ui-v2.js';
+    script.defer = true;
+    script.dataset.uiV2 = 'true';
+    document.head.append(script);
+  }
+
   const DATA_KEY = 'seeker-chronicles:v2';
-  let activeSessionId = null;
   let activeTrigger = null;
   let bypassNextOpen = false;
 
@@ -109,7 +127,6 @@
   function openViewer(session, trigger) {
     if (!session) return;
     const viewer = ensureViewer();
-    activeSessionId = session.id;
     activeTrigger = trigger;
 
     viewer.querySelector('.session-reader-title').textContent = session.title || 'Игровой день';
@@ -126,7 +143,6 @@
     const viewer = document.getElementById('sessionReader');
     viewer?.classList.add('is-hidden');
     document.body.classList.remove('session-reader-open');
-    activeSessionId = null;
     activeTrigger = null;
   }
 
