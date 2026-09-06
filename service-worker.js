@@ -1,18 +1,19 @@
-const CACHE_NAME = 'seeker-chronicles-v9';
+const CACHE_NAME = 'seeker-chronicles-v10';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './mobile.css',
+  './design-foundation.css',
+  './design-paper-editor.css',
+  './design-cards.css',
+  './design-overlays.css',
+  './design-welcome-desktop.css',
+  './design-compat.css',
   './app.js',
   './local-meta.js',
   './sync.js',
-  './manifest.webmanifest',
-  './assets/fantasy-header.svg',
-  './assets/fantasy-card-1.svg',
-  './assets/fantasy-card-2.svg',
-  './assets/fantasy-card-3.svg',
-  './assets/fantasy-card-4.svg'
+  './manifest.webmanifest'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,6 +40,6 @@ self.addEventListener('fetch', (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() => caches.match(event.request).then((cached) => cached || caches.match('./index.html')))
   );
 });
