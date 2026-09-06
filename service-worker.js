@@ -1,4 +1,4 @@
-const CACHE_NAME = 'seeker-chronicles-v4';
+const CACHE_NAME = 'seeker-chronicles-v5';
 const APP_SHELL = [
   './',
   './index.html',
