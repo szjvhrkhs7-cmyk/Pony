@@ -1,0 +1,182 @@
+/* Дополнительная мобильная адаптация поверх основного оформления. */
+@media (max-width: 760px) {
+  html { scroll-behavior: smooth; }
+  body { min-width: 0; }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    min-height: 62px;
+    padding: 10px 12px;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.16);
+  }
+
+  .brand { min-width: 0; }
+  .brand > div:last-child { min-width: 0; }
+  .brand strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+  }
+  .brand-mark { flex: 0 0 auto; }
+  .nav-item { min-height: 44px; }
+
+  .main-area {
+    padding: 20px 12px calc(46px + env(safe-area-inset-bottom));
+  }
+
+  .topbar { gap: 14px; margin-bottom: 18px; }
+  .topbar h1 { font-size: 34px; }
+  .topbar-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .topbar-actions .button,
+  .topbar-actions .file-button {
+    min-height: 44px;
+    justify-content: center;
+    text-align: center;
+  }
+  #newCampaignButton { grid-column: 1 / -1; }
+
+  .campaigns-strip {
+    grid-auto-columns: min(86vw, 340px);
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    margin-inline: -12px;
+    padding-inline: 12px;
+  }
+  .campaign-card { scroll-snap-align: start; min-height: 104px; }
+
+  .campaign-hero { padding: 18px 16px; }
+  .campaign-heading { gap: 10px; }
+  .campaign-heading h2 { font-size: 30px; }
+  .campaign-subtitle { font-size: 15px; }
+  .icon-text-button {
+    min-height: 44px;
+    padding: 8px 0;
+    align-self: flex-start;
+  }
+
+  .workspace-grid { gap: 12px; }
+  .journal-panel,
+  .quick-notes-panel { padding: 14px; }
+
+  .editor-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 7px;
+  }
+  .editor-toolbar::-webkit-scrollbar { display: none; }
+  .editor-toolbar button {
+    min-width: 42px;
+    min-height: 42px;
+    flex: 0 0 auto;
+  }
+  .toolbar-divider { flex: 0 0 1px; }
+
+  .rich-editor,
+  .quick-notes-panel textarea,
+  .modal input {
+    font-size: 16px;
+  }
+  .rich-editor {
+    min-height: 240px;
+    padding: 14px;
+  }
+  .quick-notes-panel textarea { min-height: 160px; }
+
+  .sessions-section { margin-top: 22px; }
+  .sessions-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .sessions-heading .button {
+    width: 100%;
+    min-height: 44px;
+  }
+  .session-card { border-radius: 14px; }
+  .session-cover { aspect-ratio: 16 / 9; }
+  .session-card-body { padding: 14px; }
+  .session-card p { min-height: 0; }
+
+  .empty-campaigns {
+    margin-top: 28px;
+    padding: 38px 18px;
+  }
+
+  .button { min-height: 44px; }
+
+  .modal {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    max-height: min(92dvh, 920px);
+    transform: none;
+    border-radius: 22px 22px 0 0;
+    padding: 24px 16px calc(18px + env(safe-area-inset-bottom));
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .modal::before {
+    content: '';
+    display: block;
+    width: 42px;
+    height: 4px;
+    margin: -10px auto 14px;
+    border-radius: 99px;
+    background: rgba(78,60,38,.25);
+  }
+  .modal h2 { font-size: 28px; padding-right: 32px; }
+  .modal-close { top: 12px; right: 12px; }
+  .cover-preview { aspect-ratio: 16 / 9; }
+  .cover-actions { flex-direction: column; }
+  .cover-actions .button { width: 100%; }
+
+  .modal-actions,
+  .split-actions,
+  .split-actions > div {
+    width: 100%;
+  }
+  .split-actions > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .split-actions > .button-danger { width: 100%; }
+
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    transform: none;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .brand span { display: none; }
+  .brand-mark { width: 34px; height: 34px; }
+  .nav-item span:first-child { display: none; }
+  .nav-item { padding-inline: 10px; }
+
+  .topbar h1 { font-size: 31px; }
+  .eyebrow { font-size: 10px; }
+
+  .campaign-card { padding: 14px; }
+  .campaign-facts strong { font-size: 15px; }
+
+  .section-heading h3 { font-size: 21px; }
+  .session-card h4 { font-size: 19px; }
+
+  .modal { padding-inline: 13px; }
+  .split-actions > div { grid-template-columns: 1fr; }
+}
