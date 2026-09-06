@@ -9,6 +9,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./mobile.css" />
+  <link rel="stylesheet" href="./adaptive.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -20,7 +21,6 @@
           <span>записная книжка игрока</span>
         </div>
       </div>
-
       <nav class="nav-list">
         <button class="nav-item is-active" type="button" aria-current="page">
           <span aria-hidden="true">◈</span>
@@ -35,13 +35,29 @@
           <p class="eyebrow">Личный архив приключений</p>
           <h1>Игры</h1>
         </div>
-        <div class="topbar-actions">
-          <button class="button button-ghost" id="exportButton" type="button">Экспорт</button>
-          <label class="button button-ghost file-button">
-            Импорт
-            <input id="importInput" type="file" accept="application/json" hidden />
-          </label>
-          <button class="button button-primary" id="newCampaignButton" type="button">+ Новая игра</button>
+        <div class="topbar-tools">
+          <div class="topbar-actions">
+            <button class="button button-ghost cloud-button" id="cloudButton" type="button" data-mode="local">
+              <span class="cloud-dot" aria-hidden="true"></span>
+              <span id="cloudStatusText">Локально</span>
+            </button>
+            <label class="scale-control">
+              <span>Размер</span>
+              <select id="scaleSelect" aria-label="Размер интерфейса">
+                <option value="0.8">80%</option>
+                <option value="0.9">90%</option>
+                <option value="1" selected>100%</option>
+                <option value="1.1">110%</option>
+                <option value="1.2">120%</option>
+              </select>
+            </label>
+            <button class="button button-ghost" id="exportButton" type="button">Экспорт</button>
+            <label class="button button-ghost file-button">
+              Импорт
+              <input id="importInput" type="file" accept="application/json" hidden />
+            </label>
+            <button class="button button-primary new-game-action" id="newCampaignButton" type="button">+ Новая игра</button>
+          </div>
         </div>
       </header>
 
@@ -59,18 +75,9 @@
           </div>
 
           <div class="campaign-facts">
-            <div>
-              <span>Отряд</span>
-              <strong id="campaignParty"></strong>
-            </div>
-            <div>
-              <span>Текущая цель</span>
-              <strong id="campaignGoal"></strong>
-            </div>
-            <div>
-              <span>Последняя игра</span>
-              <strong id="campaignLastSession"></strong>
-            </div>
+            <div><span>Отряд</span><strong id="campaignParty"></strong></div>
+            <div><span>Текущая цель</span><strong id="campaignGoal"></strong></div>
+            <div><span>Последняя игра</span><strong id="campaignLastSession"></strong></div>
           </div>
         </article>
 
@@ -100,7 +107,6 @@
               <button type="button" id="linkButton" title="Добавить ссылку">↗ ссылка</button>
               <button type="button" data-command="removeFormat" title="Очистить форматирование">Tx</button>
             </div>
-
             <div class="rich-editor" id="campaignJournal" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте сюда всё, что хотите сохранить по этой игре…"></div>
           </section>
 
@@ -124,7 +130,6 @@
             </div>
             <button class="button button-primary" id="newSessionButton" type="button">+ Добавить день</button>
           </div>
-
           <div class="sessions-grid" id="sessionsGrid"></div>
           <div class="empty-state is-hidden" id="sessionsEmpty">
             <div class="empty-icon" aria-hidden="true">✧</div>
@@ -175,7 +180,11 @@
       <div class="cover-uploader" id="coverUploader">
         <input id="sessionCoverInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden />
         <div class="cover-preview" id="coverPreview">
-          <div class="cover-placeholder"><span aria-hidden="true">✦</span><strong>Обложка игрового дня</strong><small>Нажмите или перетащите сюда картинку</small></div>
+          <div class="cover-placeholder">
+            <span aria-hidden="true">✦</span>
+            <strong>Обложка игрового дня</strong>
+            <small>Нажмите или перетащите сюда картинку</small>
+          </div>
         </div>
         <div class="cover-actions">
           <button class="button button-ghost" id="chooseCoverButton" type="button">Выбрать картинку</button>
@@ -188,7 +197,6 @@
         <label><span>Дата</span><input id="sessionDateInput" type="date" /></label>
         <label><span>Место</span><input id="sessionLocationInput" maxlength="100" placeholder="Необязательно" /></label>
       </div>
-
       <label><span>Короткое описание</span><input id="sessionTeaserInput" maxlength="180" placeholder="Необязательно" /></label>
 
       <div class="session-editor-block">
@@ -219,7 +227,33 @@
     </form>
   </section>
 
+  <div class="cloud-backdrop is-hidden" id="cloudBackdrop"></div>
+  <section class="cloud-modal is-hidden" id="cloudModal" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
+    <button class="cloud-close" id="cloudClose" type="button" aria-label="Закрыть">×</button>
+    <p class="eyebrow">Синхронизация</p>
+    <h2 id="cloudTitle">Облако + локальная копия</h2>
+    <p>Все изменения сначала сохраняются на этом устройстве. Если сеть доступна и вы вошли в аккаунт, копия автоматически отправляется в облако.</p>
+    <label>
+      <span>E-mail</span>
+      <input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com" />
+    </label>
+    <label>
+      <span>Пароль</span>
+      <input id="cloudPassword" type="password" autocomplete="current-password" placeholder="Минимум 6 символов" />
+    </label>
+    <div class="cloud-modal-actions">
+      <button class="button button-primary" id="cloudLogin" type="button">Войти</button>
+      <button class="button button-ghost" id="cloudRegister" type="button">Создать аккаунт</button>
+      <button class="button button-primary is-hidden" id="syncNow" type="button">Синхронизировать</button>
+      <button class="button button-danger is-hidden" id="cloudLogout" type="button">Выйти</button>
+    </div>
+    <div class="cloud-sync-note" id="syncDetails">Сейчас данные хранятся только на этом устройстве.</div>
+  </section>
+
   <div class="toast is-hidden" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./local-meta.js" defer></script>
+  <script src="./sync.js" defer></script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
