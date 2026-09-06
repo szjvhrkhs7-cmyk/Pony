@@ -1,5 +1,15 @@
-const CACHE_NAME = 'seeker-chronicles-v2';
-const APP_SHELL = ['./', './index.html', './styles.css', './mobile.css', './app.js', './manifest.webmanifest'];
+const CACHE_NAME = 'seeker-chronicles-v3';
+const APP_SHELL = [
+  './',
+  './index.html',
+  './styles.css',
+  './mobile.css',
+  './adaptive.css',
+  './app.js',
+  './local-meta.js',
+  './sync.js',
+  './manifest.webmanifest'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
@@ -16,6 +26,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  // Supabase and other cross-origin requests are network-only. The local app shell
+  // remains available from cache when the device is offline.
+  if (new URL(event.request.url).origin !== self.location.origin) return;
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
