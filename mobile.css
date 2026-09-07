@@ -1,32 +1,5 @@
-@media (max-width:479px){
+/* Mobile rules are consolidated in reference-match.css so desktop and iPhone share one visual system. */
+@media (max-width:700px){
   html,body{width:100%;max-width:100%;overflow-x:hidden}
-  .top-app-bar{padding-left:14px;padding-right:14px}
-  .brand-lockup strong{font-size:18px;max-width:68vw}
-  .app-main{padding-left:14px;padding-right:14px}
-  .section-heading h2,.summary-head h2,.session-card-body h4,.reader-paper h2,.sheet h2{overflow-wrap:anywhere}
-  .utility-row--three{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-  .utility-pill{min-height:44px;padding:0 7px;font-size:13px;border-radius:14px}
-  .campaign-card{grid-template-columns:92px minmax(0,1fr) 18px;gap:12px}
-  .campaign-card-art{height:82px}
-  .campaign-card-copy>strong{font-size:1.65rem}
-  .campaign-card-copy>small{font-size:14px}
-  .session-cover{min-height:128px}
-  .session-card-body h4{font-size:1.65rem}
-  .cover-preview{min-height:192px}
-  .toolbar{gap:4px;padding:8px}
-  .toolbar button{min-width:32px;min-height:32px;padding-inline:8px;font-size:14px}
-  .reader-cover{height:188px}
   input,textarea,select,[contenteditable=true]{font-size:16px}
-  .sheet{width:100%;max-width:100%;max-height:94dvh}
-  .sheet--tall{max-height:96dvh}
-  .welcome-screen__content{padding-left:20px;padding-right:20px}
-  .welcome-benefits{margin-top:34px;margin-bottom:26px}
-}
-@media (max-width:340px){
-  .section-tab{padding-inline:12px;font-size:12px}
-  .utility-pill{padding-inline:5px;font-size:12px}
-  .campaign-card{grid-template-columns:82px minmax(0,1fr) 16px;gap:10px}
-  .campaign-card-art{height:76px}
-  .campaign-card-copy>strong{font-size:1.45rem}
-  .sheet-actions--dual{grid-template-columns:1fr 1fr}
 }
