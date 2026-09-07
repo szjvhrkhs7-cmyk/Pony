@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#17070a" />
+  <meta name="theme-color" content="#102722" />
   <meta name="description" content="Хроники Искателя — мобильная записная книжка игрока для D&D и других настольных RPG." />
   <title>Хроники Искателя</title>
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20260907-art" />
   <link rel="stylesheet" href="./mobile.css" />
 </head>
 <body>
@@ -40,35 +40,39 @@
       <div class="top-app-bar__texture" aria-hidden="true"></div>
       <div class="top-app-bar__row">
         <div class="brand-lockup brand-lockup--header">
-          <div class="brand-emblem" aria-hidden="true"><span class="brand-emblem__core"></span></div>
-          <strong>Хроники Искателя</strong>
+          <div class="brand-emblem" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="18"/><path d="M32 1v12m0 38v12M1 32h12m38 0h12M10 10l9 9m26 26 9 9M10 54l9-9m26-26 9-9"/></g><path fill="currentColor" d="M32 5l5 22 22 5-22 5-5 22-5-22-22-5 22-5z"/><path fill="#122820" d="M32 9v23H9l20-3zm0 46V32h23l-20 3z"/></svg></div>
+          <div><strong>Хроники Искателя</strong><span class="brand-caption">Записная книжка игрока для кампаний и заметок</span></div>
         </div>
-        <button class="icon-button icon-button--gold" id="newCampaignButton" type="button" aria-label="Создать новую игру">＋</button>
+        <div class="header-tools"><label class="header-search"><input id="campaignSearch" type="search" placeholder="Поиск по играм…" aria-label="Поиск по играм" /></label><button class="icon-button icon-button--gold" id="newCampaignButton" type="button" aria-label="Создать новую игру">＋</button></div>
       </div>
-      <nav class="section-tabs" aria-label="Навигация по разделам">
-        <button class="section-tab is-active" type="button" aria-current="page">Игры</button>
-        <button class="section-tab" type="button" data-coming-soon="Персонажи скоро появятся">Персонажи</button>
-        <button class="section-tab" type="button" data-coming-soon="Раздел заметок скоро появится">Заметки</button>
-        <button class="section-tab" type="button" data-coming-soon="Дополнительные разделы скоро появятся">Еще</button>
-      </nav>
+      <nav class="section-tabs" aria-label="Навигация по разделам"><button class="section-tab is-active" type="button" data-view="games" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></svg><span>Кампании</span></button><button class="section-tab " type="button" data-view="sessions" ><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="1"/><path d="M8 2v6m8-6v6M4 10h16m-11 5h2m3 0h2"/></svg><span>Сессии</span></button><button class="section-tab " type="button" data-view="notes" ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h13v17H6zM3 6h5m-5 4h5m-5 4h5m-5 4h5m3-11h6m-6 4h6m-6 4h4"/></svg><span>Заметки</span></button><button class="section-tab " type="button" data-view="more" ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4v12H4zM8 11h8m-8 4h8"/></svg><span>Ещё</span></button><div class="sidebar-inscription"><span>✧</span>Больше, чем игра.<br>Это наши истории.</div></nav>
     </header>
 
     <main class="app-main">
       <section id="homeScreen" class="screen">
-        <header class="section-heading"><p class="eyebrow">Личный архив приключений</p><h2>Мои игры</h2></header>
-        <button class="button button--primary button--block" id="homeNewCampaignButton" type="button">＋ Новая игра</button>
+        <div class="home-top"><header class="section-heading"><h2>Мои кампании</h2><span class="heading-ornament" aria-hidden="true"></span></header><button class="button button--primary" id="homeNewCampaignButton" type="button">＋ Новая игра</button></div>
         <div class="utility-row utility-row--three">
           <button class="utility-pill utility-pill--status" id="cloudButton" type="button"><span class="dot"></span><span id="cloudStatusText">Локально</span></button>
           <button class="utility-pill" id="exportButton" type="button">Экспорт</button>
           <label class="utility-pill utility-pill--label">Импорт<input id="importInput" type="file" accept="application/json" hidden /></label>
         </div>
-        <section id="campaignsStrip" class="campaign-list" aria-label="Список игр"></section>
-        <section id="campaignsEmpty" class="empty-state is-hidden">
-          <div class="empty-state__sigil" aria-hidden="true">✦</div>
-          <h3>Здесь пока пусто</h3>
-          <p>Создайте первую игру. Все названия, записи, дни и обложки вы заполняете сами.</p>
-          <button class="button button--primary" id="emptyNewCampaignButton" type="button">Создать игру</button>
-        </section>
+        <div class="home-layout"><div class="home-primary">
+          <section id="campaignsStrip" class="campaign-list" aria-label="Список игр"></section>
+          <p id="searchEmpty" class="search-empty is-hidden">Игр с таким названием не найдено.</p>
+          <section id="campaignsEmpty" class="empty-state is-hidden">
+            <div class="empty-campaign-art" aria-hidden="true"><div class="landscape-art"></div><div class="landscape-art landscape-art--snow"></div><div class="landscape-art landscape-art--forest"></div></div>
+            <div class="empty-campaign-copy"><p class="eyebrow">Первая страница вашей истории</p><h3>Приключение начинается здесь</h3><p>Назовите свою кампанию. Сохраняйте игровые дни, находки и всё, что хочется запомнить.</p><button class="button button--primary" id="emptyNewCampaignButton" type="button">＋ Создать игру</button></div>
+          </section>
+          <div class="dashboard-grid">
+            <section class="paper-panel"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="1"/><path d="M8 2v6m8-6v6M4 10h16m-11 5h2m3 0h2"/></svg>Последние сессии</h3></header><ul id="recentSessions" class="dashboard-list"></ul></section>
+            <section class="paper-panel"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h13v17H6zM3 6h5m-5 4h5m-5 4h5m-5 4h5m3-11h6m-6 4h6m-6 4h4"/></svg>Заметки к игре</h3></header><ul id="recentNotes" class="dashboard-list"></ul></section>
+          </div>
+        </div><aside class="home-aside">
+          <section class="paper-panel next-session"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></svg>Продолжить историю</h3></header><div class="landscape-art aside-art" aria-hidden="true"></div><div class="panel-content"><p id="continueCopy" class="muted">Здесь будет ваша последняя кампания.</p><button id="continueCampaign" class="button button--primary" type="button">Создать игру</button></div></section>
+          <section class="paper-panel"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h13v17H6zM3 6h5m-5 4h5m-5 4h5m-5 4h5m3-11h6m-6 4h6m-6 4h4"/></svg>Перед следующей игрой</h3></header><div class="panel-content"><p id="nextReminder" class="muted">Напоминания из ваших кампаний будут под рукой.</p></div></section>
+          <div class="desk-quote">Хорошие истории не заканчиваются.<br>Они ждут следующей сессии.</div>
+        </aside></div>
+        <div class="page-footer">Ваши приключения остаются с вами</div>
       </section>
 
       <section id="workspace" class="screen is-hidden">
@@ -88,7 +92,7 @@
           </div>
         </article>
 
-        <section class="paper-card panel journal-panel">
+        <div class="workspace-panels"><section class="paper-card panel journal-panel">
           <header class="panel-head"><div><p class="eyebrow">Общая запись</p><h3>Хроника игры</h3></div><span class="save-indicator" id="journalSaveState">Сохранено</span></header>
           <div class="rich-text-editor">
             <div class="toolbar editor-toolbar" role="toolbar" aria-label="Форматирование текста">
@@ -103,12 +107,13 @@
           <textarea id="quickNotes" rows="5" placeholder="Короткие напоминания…"></textarea>
         </section>
 
-        <section class="sessions-section">
+        </div><section class="sessions-section">
           <header class="panel-head panel-head--stack"><div><p class="eyebrow">Дневник приключения</p><h3>Дни игры</h3></div><button class="button button--primary button--compact" id="newSessionButton" type="button">＋ Добавить день</button></header>
           <div id="sessionsGrid" class="session-list"></div>
           <section id="sessionsEmpty" class="empty-state is-hidden"><div class="empty-state__sigil" aria-hidden="true">✧</div><h3>Записей пока нет</h3><p>Добавьте игровой день, чтобы сохранить отдельную запись, дату, место и обложку.</p><button class="button button--primary" id="emptyNewSessionButton" type="button">Добавить день</button></section>
         </section>
       </section>
+      <section id="recordsScreen" class="screen is-hidden"><div class="home-top"><h2 id="recordsTitle" class="record-heading"></h2></div><div id="recordsContent" class="all-records"></div></section>
     </main>
   </div>
 
@@ -161,9 +166,10 @@
   </article>
 
   <div id="toast" class="toast is-hidden" role="status" aria-live="polite"></div>
-  <script src="./app.js"></script>
+  <script src="./app.js?v=20260907-art"></script>
   <script src="./local-meta.js"></script>
   <script src="./sync.js"></script>
+  <script src="./dashboard.js?v=20260907-art"></script>
   <script>
     (() => {
       const ONBOARDING_KEY = 'seeker-chronicles:onboarding-complete';
