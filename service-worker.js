@@ -1,8 +1,8 @@
-const CACHE_NAME = 'seeker-chronicles-v11-art';
+const CACHE_NAME = 'seeker-chronicles-v12-polish';
 const APP_SHELL = [
-  './', './index.html', './styles.css?v=20260907-art', './mobile.css',
-  './reference-match.css?v=20260907-art', './app.js?v=20260907-art',
-  './dashboard.js?v=20260907-art', './local-meta.js', './sync.js',
+  './', './index.html', './styles.css?v=20260907-polish', './mobile.css',
+  './reference-match.css?v=20260907-polish', './app.js?v=20260907-polish',
+  './dashboard.js?v=20260907-polish', './local-meta.js', './sync.js',
   './manifest.webmanifest', './assets/adventurer-desk.webp',
   './assets/aged-paper.webp', './assets/reference-scenes.webp'
 ];

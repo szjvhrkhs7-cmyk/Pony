@@ -5,6 +5,7 @@
   const content = document.getElementById('recordsContent');
   const search = document.getElementById('campaignSearch');
   let currentView = 'games';
+  let readerOrigin = null;
   const byRecent = (a, b) => sessionSortValue(b.session) - sessionSortValue(a.session);
   const sessions = () => state.data.campaigns.flatMap(campaign => campaign.sessions.map(session => ({ campaign, session }))).sort(byRecent);
   function button(title, detail, action) {
@@ -18,14 +19,17 @@
     if (!values.length) { const li = document.createElement('li'); li.className = 'muted'; li.textContent = fallback; el.append(li); }
     values.forEach(value => { const li = document.createElement('li'); li.append(make(value)); el.append(li); });
   }
+  function readSession(campaign, session) {
+    const origin = currentView; selectCampaign(campaign); readerOrigin = origin; openSessionReader(session);
+  }
   function selectCampaign(campaign) { currentView = 'games'; activate(); openCampaign(campaign.id); }
   function activate() {
     tabs.forEach(tab => { const active = tab.dataset.view === currentView; tab.classList.toggle('is-active', active); if (active) tab.setAttribute('aria-current', 'page'); else tab.removeAttribute('aria-current'); });
     screen.classList.toggle('is-hidden', currentView === 'games');
-    if (currentView !== 'games') { els.homeScreen.classList.add('is-hidden'); els.workspace.classList.add('is-hidden'); }
+    if (currentView !== 'games') { els.newCampaignButton.hidden = true; els.homeScreen.classList.add('is-hidden'); els.workspace.classList.add('is-hidden'); }
   }
   function refreshDashboard() {
-    list('recentSessions', sessions().slice(0, 3), 'Здесь появятся записи ваших игровых дней.', ({campaign, session}) => button(session.title, `${campaign.name} · ${formatDate(session.date) || 'Без даты'}`, () => { selectCampaign(campaign); openSessionReader(session); }));
+    list('recentSessions', sessions().slice(0, 3), 'Здесь появятся записи ваших игровых дней.', ({campaign, session}) => button(session.title, `${campaign.name} · ${formatDate(session.date) || 'Без даты'}`, () => readSession(campaign, session)));
     const notes = state.data.campaigns.filter(c => c.quickNotes.trim());
     list('recentNotes', notes.slice(0, 3), 'Сохраните напоминание внутри кампании.', campaign => button(campaign.name, campaign.quickNotes.length > 95 ? campaign.quickNotes.slice(0, 95) + '…' : campaign.quickNotes, () => { selectCampaign(campaign); els.quickNotes.focus(); }));
     const recent = state.data.campaigns.find(c => c.id === state.data.lastCampaignId) || state.data.campaigns[0];
@@ -33,23 +37,31 @@
     document.getElementById('continueCampaign').textContent = recent ? 'К кампании →' : 'Создать игру';
     document.getElementById('continueCampaign').onclick = () => recent ? selectCampaign(recent) : openCampaignModal();
     document.getElementById('nextReminder').textContent = notes[0]?.quickNotes || 'Напоминания из ваших кампаний будут под рукой.';
+    const hasCampaigns = state.data.campaigns.length > 0;
+    document.querySelector('.home-layout').classList.toggle('is-empty', !hasCampaigns);
+    document.querySelector('.home-aside').hidden = !hasCampaigns;
+    document.getElementById('homeNewCampaignButton').hidden = !hasCampaigns;
+    document.querySelector('.campaign-search').hidden = !hasCampaigns;
+    document.querySelector('.dashboard-grid').hidden = !sessions().length && !notes.length;
+    document.getElementById('quickSessionButton').onclick = () => { if (recent) { selectCampaign(recent); openSessionModal(); } };
     applySearch();
   }
   function applySearch() {
     const query = search.value.trim().toLocaleLowerCase('ru'); let visible = 0;
     document.querySelectorAll('.campaign-card').forEach(card => { const show = card.textContent.toLocaleLowerCase('ru').includes(query); card.hidden = !show; if (show) visible++; });
+    document.getElementById('searchCount').textContent = query ? `${visible} из ${state.data.campaigns.length}` : '';
     document.getElementById('searchEmpty').classList.toggle('is-hidden', !query || visible > 0 || state.data.campaigns.length === 0);
   }
   function records(view) {
     flushCampaignTextSave(); currentView = view; activate(); content.replaceChildren();
     document.getElementById('recordsTitle').textContent = {sessions:'Игровые сессии',notes:'Заметки к играм',more:'Моя записная книжка'}[view];
     if (view === 'sessions') {
-      sessions().forEach(({campaign, session}) => { const item = button(session.title, `${campaign.name} · ${formatDate(session.date) || 'Без даты'}`, () => { selectCampaign(campaign); openSessionReader(session); }); item.classList.add('paper-panel'); content.append(item); });
+      sessions().forEach(({campaign, session}) => { const item = button(session.title, `${campaign.name} · ${formatDate(session.date) || 'Без даты'}`, () => readSession(campaign, session)); item.classList.add('paper-panel'); content.append(item); });
     } else if (view === 'notes') {
       state.data.campaigns.filter(c => c.quickNotes.trim() || textFromHtml(c.journal).trim()).forEach(campaign => {
         const article = document.createElement('article'); article.className = 'paper-panel notes-entry';
         const h = document.createElement('h3'); h.textContent = campaign.name;
-        const p = document.createElement('p'); p.textContent = campaign.quickNotes || textFromHtml(campaign.journal);
+        const p = document.createElement('p'); p.textContent = [campaign.quickNotes && `Перед следующей игрой\n${campaign.quickNotes}`, textFromHtml(campaign.journal).trim() && `Записи кампании\n${textFromHtml(campaign.journal)}`].filter(Boolean).join('\n\n');
         const edit = button('Открыть кампанию →', '', () => selectCampaign(campaign)); article.append(h, p, edit); content.append(article);
       });
     } else {
@@ -63,5 +75,14 @@
   document.getElementById('newCampaignButton').addEventListener('click', () => { if (currentView !== 'games') { currentView = 'games'; activate(); backToGames(); } }, {capture:true});
   search.addEventListener('input', () => { if (currentView !== 'games' || state.currentCampaignId) {currentView = 'games';activate();backToGames();} applySearch(); });
   new MutationObserver(() => { refreshDashboard(); if (currentView !== 'games') activate(); }).observe(els.campaignsStrip, {childList:true});
+  search.addEventListener('keydown', event => { if (event.key === 'Escape') { search.value = ''; applySearch(); } });
+  new MutationObserver(() => {
+    if (els.sessionReader.classList.contains('is-hidden') && readerOrigin) {
+      const origin = readerOrigin; readerOrigin = null;
+      if (origin !== 'games') records(origin);
+    }
+  }).observe(els.sessionReader, {attributes:true, attributeFilter:['class']});
+  // Editing from the reader deliberately opens the campaign rather than returning to the list.
+  els.readerEditButton.addEventListener('click', () => {readerOrigin = null;}, {capture:true});
   refreshDashboard();
 })();

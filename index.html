@@ -7,33 +7,10 @@
   <meta name="description" content="Хроники Искателя — мобильная записная книжка игрока для D&D и других настольных RPG." />
   <title>Хроники Искателя</title>
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="stylesheet" href="./styles.css?v=20260907-art" />
+  <link rel="stylesheet" href="./styles.css?v=20260907-polish" />
   <link rel="stylesheet" href="./mobile.css" />
 </head>
 <body>
-  <div id="welcomeScreen" class="welcome-screen is-hidden" aria-hidden="true">
-    <div class="welcome-screen__art"></div>
-    <div class="welcome-screen__content">
-      <button class="welcome-skip" id="welcomeSkipButton" type="button">Пропустить</button>
-      <div class="welcome-brand">
-        <div class="brand-emblem brand-emblem--large" aria-hidden="true">
-          <span class="brand-emblem__core"></span>
-        </div>
-        <div class="welcome-title-group">
-          <h1>Хроники<br />Искателя</h1>
-          <p>Твои приключения заслуживают быть записанными</p>
-        </div>
-      </div>
-      <ul class="welcome-benefits" aria-label="Преимущества приложения">
-        <li><span class="welcome-benefits__icon">✦</span><div><strong>Веди хронику игр</strong><span>Сохраняй сессии, решения и ключевые события</span></div></li>
-        <li><span class="welcome-benefits__icon">✧</span><div><strong>Развивай персонажей</strong><span>Храни цели, отряд, заметки и важные детали</span></div></li>
-        <li><span class="welcome-benefits__icon">⬡</span><div><strong>Не забывай важное</strong><span>Держи под рукой планы, подсказки и обложки игровых дней</span></div></li>
-      </ul>
-      <button class="button button--primary button--hero" id="welcomeStartButton" type="button">Начать <span aria-hidden="true">→</span></button>
-      <div class="welcome-pager" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div>
-    </div>
-  </div>
-
   <div class="app-bg"></div>
   <div class="fantasy-app">
     <header class="top-app-bar">
@@ -43,7 +20,7 @@
           <div class="brand-emblem" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="18"/><path d="M32 1v12m0 38v12M1 32h12m38 0h12M10 10l9 9m26 26 9 9M10 54l9-9m26-26 9-9"/></g><path fill="currentColor" d="M32 5l5 22 22 5-22 5-5 22-5-22-22-5 22-5z"/><path fill="#122820" d="M32 9v23H9l20-3zm0 46V32h23l-20 3z"/></svg></div>
           <div><strong>Хроники Искателя</strong><span class="brand-caption">Записная книжка игрока для кампаний и заметок</span></div>
         </div>
-        <div class="header-tools"><label class="header-search"><input id="campaignSearch" type="search" placeholder="Поиск по играм…" aria-label="Поиск по играм" /></label><button class="icon-button icon-button--gold" id="newCampaignButton" type="button" aria-label="Создать новую игру">＋</button></div>
+        <div class="header-tools"><button class="icon-button icon-button--gold" id="newCampaignButton" type="button" aria-label="Создать новую игру">＋</button></div>
       </div>
       <nav class="section-tabs" aria-label="Навигация по разделам"><button class="section-tab is-active" type="button" data-view="games" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></svg><span>Кампании</span></button><button class="section-tab " type="button" data-view="sessions" ><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="1"/><path d="M8 2v6m8-6v6M4 10h16m-11 5h2m3 0h2"/></svg><span>Сессии</span></button><button class="section-tab " type="button" data-view="notes" ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h13v17H6zM3 6h5m-5 4h5m-5 4h5m-5 4h5m3-11h6m-6 4h6m-6 4h4"/></svg><span>Заметки</span></button><button class="section-tab " type="button" data-view="more" ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4v12H4zM8 11h8m-8 4h8"/></svg><span>Ещё</span></button><div class="sidebar-inscription"><span>✧</span>Больше, чем игра.<br>Это наши истории.</div></nav>
     </header>
@@ -51,11 +28,12 @@
     <main class="app-main">
       <section id="homeScreen" class="screen">
         <div class="home-top"><header class="section-heading"><h2>Мои кампании</h2><span class="heading-ornament" aria-hidden="true"></span></header><button class="button button--primary" id="homeNewCampaignButton" type="button">＋ Новая игра</button></div>
-        <div class="utility-row utility-row--three">
+        <div class="campaign-controls"><div class="utility-row utility-row--three">
           <button class="utility-pill utility-pill--status" id="cloudButton" type="button"><span class="dot"></span><span id="cloudStatusText">Локально</span></button>
           <button class="utility-pill" id="exportButton" type="button">Экспорт</button>
           <label class="utility-pill utility-pill--label">Импорт<input id="importInput" type="file" accept="application/json" hidden /></label>
         </div>
+        <label class="campaign-search"><span class="search-symbol" aria-hidden="true">⌕</span><input id="campaignSearch" type="search" placeholder="Найти кампанию…" aria-label="Поиск по играм" /><span id="searchCount" aria-live="polite"></span></label></div>
         <div class="home-layout"><div class="home-primary">
           <section id="campaignsStrip" class="campaign-list" aria-label="Список игр"></section>
           <p id="searchEmpty" class="search-empty is-hidden">Игр с таким названием не найдено.</p>
@@ -68,7 +46,7 @@
             <section class="paper-panel"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h13v17H6zM3 6h5m-5 4h5m-5 4h5m-5 4h5m3-11h6m-6 4h6m-6 4h4"/></svg>Заметки к игре</h3></header><ul id="recentNotes" class="dashboard-list"></ul></section>
           </div>
         </div><aside class="home-aside">
-          <section class="paper-panel next-session"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></svg>Продолжить историю</h3></header><div class="landscape-art aside-art" aria-hidden="true"></div><div class="panel-content"><p id="continueCopy" class="muted">Здесь будет ваша последняя кампания.</p><button id="continueCampaign" class="button button--primary" type="button">Создать игру</button></div></section>
+          <section class="paper-panel next-session"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></svg>Продолжить историю</h3></header><div class="landscape-art aside-art" aria-hidden="true"></div><div class="panel-content"><p id="continueCopy" class="muted">Здесь будет ваша последняя кампания.</p><button id="continueCampaign" class="button button--primary" type="button">К кампании →</button><button id="quickSessionButton" class="text-button quick-session" type="button">＋ Записать сессию</button></div></section>
           <section class="paper-panel"><header><h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h13v17H6zM3 6h5m-5 4h5m-5 4h5m-5 4h5m3-11h6m-6 4h6m-6 4h4"/></svg>Перед следующей игрой</h3></header><div class="panel-content"><p id="nextReminder" class="muted">Напоминания из ваших кампаний будут под рукой.</p></div></section>
           <div class="desk-quote">Хорошие истории не заканчиваются.<br>Они ждут следующей сессии.</div>
         </aside></div>
@@ -77,7 +55,7 @@
 
       <section id="workspace" class="screen is-hidden">
         <div class="workspace-topbar">
-          <button class="icon-button icon-button--ghost" id="backToGamesButton" type="button" aria-label="Назад">‹</button>
+          <button class="icon-button icon-button--ghost" id="backToGamesButton" type="button" aria-label="К списку кампаний">‹</button>
           <strong id="campaignScreenTitle">Игра</strong>
           <button class="icon-button icon-button--ghost icon-button--dots" id="campaignTopEditButton" type="button" aria-label="Редактировать игру">⋯</button>
         </div>
@@ -166,37 +144,10 @@
   </article>
 
   <div id="toast" class="toast is-hidden" role="status" aria-live="polite"></div>
-  <script src="./app.js?v=20260907-art"></script>
+  <script src="./app.js?v=20260907-polish"></script>
   <script src="./local-meta.js"></script>
   <script src="./sync.js"></script>
-  <script src="./dashboard.js?v=20260907-art"></script>
-  <script>
-    (() => {
-      const ONBOARDING_KEY = 'seeker-chronicles:onboarding-complete';
-      const screen = document.getElementById('welcomeScreen');
-      const close = () => {
-        localStorage.setItem(ONBOARDING_KEY, '1');
-        screen?.classList.add('is-hidden');
-        screen?.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('is-welcome-open');
-      };
-      if (screen && localStorage.getItem(ONBOARDING_KEY) !== '1') {
-        screen.classList.remove('is-hidden');
-        screen.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('is-welcome-open');
-      }
-      document.getElementById('welcomeStartButton')?.addEventListener('click', close);
-      document.getElementById('welcomeSkipButton')?.addEventListener('click', close);
-      document.querySelectorAll('[data-coming-soon]').forEach((button) => {
-        button.addEventListener('click', () => {
-          const toast = document.getElementById('toast');
-          if (!toast) return;
-          toast.textContent = button.dataset.comingSoon || 'Раздел скоро появится';
-          toast.classList.remove('is-hidden');
-          window.setTimeout(() => toast.classList.add('is-hidden'), 2200);
-        });
-      });
-    })();
-  </script>
+  <script src="./dashboard.js?v=20260907-polish"></script>
+
 </body>
 </html>

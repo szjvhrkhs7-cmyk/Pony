@@ -144,7 +144,7 @@ function normalizeData() {
 }
 
 function bindEvents() {
-  els.newCampaignButton.addEventListener('click', () => openCampaignModal());
+  els.newCampaignButton.addEventListener('click', () => getCurrentCampaign() ? openSessionModal() : openCampaignModal());
   els.homeNewCampaignButton.addEventListener('click', () => openCampaignModal());
   els.emptyNewCampaignButton.addEventListener('click', () => openCampaignModal());
   els.editCampaignButton.addEventListener('click', () => openCampaignModal(getCurrentCampaign()));
@@ -262,6 +262,9 @@ function render() {
   els.homeScreen.classList.toggle('is-hidden', hasOpenCampaign);
   els.workspace.classList.toggle('is-hidden', !hasOpenCampaign);
   els.campaignsEmpty.classList.toggle('is-hidden', state.data.campaigns.length > 0);
+  els.newCampaignButton.hidden = !hasOpenCampaign;
+  els.newCampaignButton.setAttribute('aria-label', hasOpenCampaign ? 'Добавить игровую сессию' : 'Создать новую игру');
+  els.newCampaignButton.title = hasOpenCampaign ? 'Добавить игровую сессию' : 'Создать новую игру';
 
   if (!campaign) return;
 
