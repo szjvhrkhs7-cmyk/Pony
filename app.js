@@ -289,13 +289,18 @@ function renderCampaignList() {
     button.innerHTML = `
       <span class="campaign-card-art" aria-hidden="true"></span>
       <span class="campaign-card-copy">
-        <span>${sessionCount} ${plural(sessionCount, 'сессия', 'сессии', 'сессий')}</span>
-        <strong></strong>
+        <strong></strong><span class="campaign-subtitle"></span><span class="campaign-fact campaign-party"></span><span class="campaign-fact campaign-last"></span><span class="campaign-fact campaign-goal"></span>
         <small>Открыть →</small>
       </span>
       <span class="campaign-card-arrow" aria-hidden="true">›</span>
     `;
     button.querySelector('strong').textContent = campaign.name;
+    button.dataset.campaignId = campaign.id;
+    button.querySelector('.campaign-subtitle').textContent = campaign.subtitle;
+    button.querySelector('.campaign-party').textContent = campaign.party ? `Отряд: ${campaign.party}` : 'Отряд не указан';
+    button.querySelector('.campaign-last').textContent = formatLastSession(campaign.sessions) ? `Последняя игра: ${formatLastSession(campaign.sessions)}` : 'Первый игровой день впереди';
+    button.querySelector('.campaign-goal').textContent = campaign.goal ? `Цель: ${campaign.goal}` : '';
+    button.querySelector('small').textContent = `${sessionCount} ${plural(sessionCount, 'сессия', 'сессии', 'сессий')} · Открыть →`;
     button.addEventListener('click', () => openCampaign(campaign.id));
     fragment.append(button);
 
@@ -435,6 +440,7 @@ function editReaderSession() {
 }
 
 function openCampaignModal(campaign = null) {
+  flushCampaignTextSave();
   state.editingCampaignId = campaign?.id || null;
   els.campaignModalTitle.textContent = campaign ? 'Редактировать игру' : 'Новая игра';
   els.campaignNameInput.value = campaign?.name || '';
@@ -502,6 +508,7 @@ async function deleteEditingCampaign() {
 }
 
 async function openSessionModal(session = null) {
+  flushCampaignTextSave();
   state.editingSessionId = session?.id || null;
   state.pendingCoverBlob = null;
   state.pendingCoverRemoved = false;
