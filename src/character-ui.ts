@@ -1,3 +1,5 @@
+export {};
+
 const CHAR_ICONS: Record<string, string> = {
   character: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 9a3.8 3.8 0 1 1 7.6 0 3.8 3.8 0 0 1-7.6 0Z"/><path d="M4.8 20c.4-4.2 3-6.4 7.2-6.4s6.8 2.2 7.2 6.4"/><path d="M8.7 4.2 12 2.8l3.3 1.4"/></svg>`,
   strength: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/></svg>`,
