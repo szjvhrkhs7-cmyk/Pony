@@ -1,4 +1,4 @@
-const CACHE_NAME = "seeker-chronicles-v16-reference-ui";
+const CACHE_NAME = "seeker-chronicles-v17-reference-ui";
 const APP_SHELL = [
   "./",
   "./index.html",
