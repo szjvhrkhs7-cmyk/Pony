@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#102722" />
+  <meta name="theme-color" content="#241215" />
   <meta name="description" content="Хроники Искателя — мобильная записная книжка игрока для D&D и других настольных RPG." />
   <title>Хроники Искателя</title>
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="stylesheet" href="./styles.css?v=20260907-polish" />
+  <link rel="stylesheet" href="./styles.css?v=20260908-book-polish" />
   <link rel="stylesheet" href="./mobile.css" />
 </head>
 <body>
@@ -17,7 +17,7 @@
       <div class="top-app-bar__texture" aria-hidden="true"></div>
       <div class="top-app-bar__row">
         <div class="brand-lockup brand-lockup--header">
-          <div class="brand-emblem" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="18"/><path d="M32 1v12m0 38v12M1 32h12m38 0h12M10 10l9 9m26 26 9 9M10 54l9-9m26-26 9-9"/></g><path fill="currentColor" d="M32 5l5 22 22 5-22 5-5 22-5-22-22-5 22-5z"/><path fill="#122820" d="M32 9v23H9l20-3zm0 46V32h23l-20 3z"/></svg></div>
+          <div class="brand-emblem" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="18"/><path d="M32 1v12m0 38v12M1 32h12m38 0h12M10 10l9 9m26 26 9 9M10 54l9-9m26-26 9-9"/></g><path fill="currentColor" d="M32 5l5 22 22 5-22 5-5 22-5-22-22-5 22-5z"/><path fill="#241215" d="M32 9v23H9l20-3zm0 46V32h23l-20 3z"/></svg></div>
           <div><strong>Хроники Искателя</strong><span class="brand-caption">Записная книжка игрока для кампаний и заметок</span></div>
         </div>
         <div class="header-tools"><button class="icon-button icon-button--gold" id="newCampaignButton" type="button" aria-label="Создать новую игру">＋</button></div>
@@ -74,15 +74,15 @@
           <header class="panel-head"><div><p class="eyebrow">Общая запись</p><h3>Хроника игры</h3></div><span class="save-indicator" id="journalSaveState">Сохранено</span></header>
           <div class="rich-text-editor">
             <div class="toolbar editor-toolbar" role="toolbar" aria-label="Форматирование текста">
-              <button type="button" data-command="bold"><b>B</b></button><button type="button" data-command="italic"><i>I</i></button><button type="button" data-command="underline"><u>U</u></button><button type="button" data-block="h2">H₂</button><button type="button" data-block="h3">H₃</button><button type="button" data-block="p">¶</button><button type="button" data-command="insertUnorderedList">•</button><button type="button" data-command="insertOrderedList">1.</button><button type="button" data-block="blockquote">❝</button><button type="button" id="linkButton">↗</button>
+              <button type="button" data-command="bold" aria-label="Жирный" title="Жирный"><b>B</b></button><button type="button" data-command="italic" aria-label="Курсив" title="Курсив"><i>I</i></button><button type="button" data-command="underline" aria-label="Подчёркивание" title="Подчёркивание"><u>U</u></button><button type="button" data-block="h2" aria-label="Заголовок" title="Заголовок">H₂</button><button type="button" data-block="h3" aria-label="Подзаголовок" title="Подзаголовок">H₃</button><button type="button" data-block="p" aria-label="Обычный текст" title="Обычный текст">¶</button><button type="button" data-command="insertUnorderedList" aria-label="Маркированный список" title="Маркированный список">•</button><button type="button" data-command="insertOrderedList" aria-label="Нумерованный список" title="Нумерованный список">1.</button><button type="button" data-block="blockquote" aria-label="Цитата" title="Цитата">❝</button><button type="button" id="linkButton" aria-label="Добавить ссылку" title="Добавить ссылку">↗</button>
             </div>
-            <div id="campaignJournal" class="rich-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте сюда всё, что хотите сохранить по этой игре…"></div>
+            <div aria-label="Хроника игры" id="campaignJournal" class="rich-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Записывайте сюда всё, что хотите сохранить по этой игре…"></div>
           </div>
         </section>
 
         <section class="paper-card panel">
           <header class="panel-head"><div><p class="eyebrow">Перед следующей игрой</p><h3>Не забыть</h3></div></header>
-          <textarea id="quickNotes" rows="5" placeholder="Короткие напоминания…"></textarea>
+          <textarea aria-label="Напоминания перед следующей игрой" id="quickNotes" rows="5" placeholder="Короткие напоминания…"></textarea>
         </section>
 
         </div><section class="sessions-section">
@@ -117,7 +117,7 @@
       <label><span>Дата</span><input id="sessionDateInput" type="date" /></label>
       <label><span>Место</span><input id="sessionLocationInput" maxlength="100" placeholder="Необязательно" /></label>
       <label><span>Короткое описание</span><input id="sessionTeaserInput" maxlength="180" placeholder="Необязательно" /></label>
-      <div><span class="field-label">Запись о сессии</span><div class="rich-text-editor"><div class="toolbar editor-toolbar session-toolbar" role="toolbar" aria-label="Форматирование записи"><button type="button" data-command="bold"><b>B</b></button><button type="button" data-command="italic"><i>I</i></button><button type="button" data-command="underline"><u>U</u></button><button type="button" data-block="h2">H₂</button><button type="button" data-block="h3">H₃</button><button type="button" data-block="p">¶</button><button type="button" data-command="insertUnorderedList">•</button><button type="button" data-command="insertOrderedList">1.</button><button type="button" data-block="blockquote">❝</button><button type="button" data-session-link>↗</button></div><div id="sessionNotesEditor" class="rich-editor rich-editor--session" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Запись игрового дня…"></div></div></div>
+      <div><span class="field-label">Запись о сессии</span><div class="rich-text-editor"><div class="toolbar editor-toolbar session-toolbar" role="toolbar" aria-label="Форматирование записи"><button type="button" data-command="bold" aria-label="Жирный" title="Жирный"><b>B</b></button><button type="button" data-command="italic" aria-label="Курсив" title="Курсив"><i>I</i></button><button type="button" data-command="underline" aria-label="Подчёркивание" title="Подчёркивание"><u>U</u></button><button type="button" data-block="h2" aria-label="Заголовок" title="Заголовок">H₂</button><button type="button" data-block="h3" aria-label="Подзаголовок" title="Подзаголовок">H₃</button><button type="button" data-block="p" aria-label="Обычный текст" title="Обычный текст">¶</button><button type="button" data-command="insertUnorderedList" aria-label="Маркированный список" title="Маркированный список">•</button><button type="button" data-command="insertOrderedList" aria-label="Нумерованный список" title="Нумерованный список">1.</button><button type="button" data-block="blockquote" aria-label="Цитата" title="Цитата">❝</button><button type="button" data-session-link aria-label="Добавить ссылку" title="Добавить ссылку">↗</button></div><div aria-label="Запись о сессии" id="sessionNotesEditor" class="rich-editor rich-editor--session" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Запись игрового дня…"></div></div></div>
       <div class="sheet-actions sheet-actions--dual"><button class="button button--secondary" type="button" data-close-modal>Отмена</button><button class="button button--primary" type="submit">Сохранить</button></div>
       <div class="sheet-actions sheet-actions--dual"><button class="button button--secondary" id="chooseCoverButton" type="button">Выбрать картинку</button><button class="button button--danger is-hidden" id="removeCoverButton" type="button">Удалить обложку</button></div>
       <button class="button button--danger is-hidden" id="deleteSessionButton" type="button">Удалить день</button>
@@ -144,10 +144,10 @@
   </article>
 
   <div id="toast" class="toast is-hidden" role="status" aria-live="polite"></div>
-  <script src="./app.js?v=20260907-polish"></script>
+  <script src="./app.js?v=20260908-book-polish"></script>
   <script src="./local-meta.js"></script>
   <script src="./sync.js"></script>
-  <script src="./dashboard.js?v=20260907-polish"></script>
+  <script src="./dashboard.js?v=20260908-book-polish"></script>
 
 </body>
 </html>
