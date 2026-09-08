@@ -1,0 +1,484 @@
+/* Screenshot-driven fixes for party list/detail screens. Character UI intentionally untouched. */
+:root {
+  --party-safe-top: env(safe-area-inset-top, 0px);
+  --party-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --party-bottom-nav: 92px;
+}
+
+/* The four crossed-out journal blocks are removed from the party detail UI. Data remains stored. */
+.detail-page .journal-section[data-section$=":history"],
+.detail-page .journal-section[data-section$=":events"],
+.detail-page .journal-section[data-section$=":notes"],
+.detail-page .journal-section[data-section$=":companions"] {
+  display: none !important;
+}
+
+/* Personal party wallpaper: preserved parchment legibility, visible atmosphere underneath. */
+.detail-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.detail-page.has-party-wallpaper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(242,221,179,.80), rgba(229,199,146,.84)),
+    var(--party-wallpaper);
+  background-position: center top, center top;
+  background-size: 100% 100%, 100% auto;
+  background-repeat: no-repeat, repeat-y;
+  opacity: .55;
+  mix-blend-mode: multiply;
+}
+
+.detail-page.has-party-wallpaper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Back navigation marked on screenshot. */
+.detail-page .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  min-height: 44px;
+  margin: 0 0 18px;
+  padding: 4px 2px;
+  color: #6f5941;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.detail-page .back-link:hover {
+  color: #682428;
+}
+
+/* Meta row becomes an editorial info strip, without cramped separators. */
+.detail-page .campaign-meta.large {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+  margin: 14px 0 20px;
+  padding: 13px 0;
+  border-top: 1px solid rgba(113,80,42,.25);
+  border-bottom: 1px solid rgba(113,80,42,.25);
+}
+
+.detail-page .campaign-meta.large > span {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Sessions are now the first journal section after campaign information. */
+.detail-page > .journal-section:not([data-section]) {
+  margin-top: 24px;
+  padding-top: 24px;
+}
+
+/* Compact the new-party card marked on screenshot. */
+.parties-page .new-campaign {
+  min-height: 230px;
+  grid-template-columns: 112px minmax(0,1fr);
+  gap: 22px;
+  align-items: center;
+  padding: 26px;
+}
+
+.parties-page .new-campaign .compass-plus {
+  width: 96px;
+  height: 96px;
+}
+
+.parties-page .new-campaign h2 {
+  margin: 0 0 5px;
+}
+
+.parties-page .new-campaign p {
+  margin: 0 0 13px;
+}
+
+.parties-page .new-campaign .cta {
+  margin-top: 2px;
+}
+
+/* Wallpaper upload control injected into party create/edit form. */
+.wallpaper-upload-section {
+  margin-top: 2px;
+}
+
+.wallpaper-upload-card {
+  display: grid;
+  grid-template-columns: 154px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid rgba(111,78,42,.40);
+  border-radius: 14px;
+  background: rgba(247,231,198,.26);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16);
+}
+
+.wallpaper-preview {
+  position: relative;
+  height: 106px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border: 1px solid rgba(154,112,60,.55);
+  border-radius: 12px;
+  background:
+    linear-gradient(140deg, rgba(28,54,43,.97), rgba(13,31,24,.98)),
+    url("./assets/map-etching.svg") center/cover;
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 0 4px rgba(8,20,14,.34), 0 7px 18px rgba(55,34,17,.10);
+}
+
+.wallpaper-preview input,
+.wallpaper-trigger input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wallpaper-preview-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(215,177,109,.7);
+  border-radius: 50%;
+  background: rgba(100,35,39,.90);
+  color: #f3dfb9;
+  font: 300 22px/1 -apple-system, BlinkMacSystemFont, sans-serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+}
+
+.wallpaper-preview.has-preview .wallpaper-preview-mark {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+}
+
+.wallpaper-upload-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+}
+
+.wallpaper-upload-copy strong {
+  color: #682428;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.wallpaper-upload-copy > span {
+  max-width: 45ch;
+  color: #69533d;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.wallpaper-trigger,
+.wallpaper-remove {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+  padding: 8px 13px;
+  cursor: pointer;
+  border: 1px solid rgba(111,78,42,.36);
+  border-radius: 9px;
+  background: rgba(250,238,212,.54);
+  color: #463529;
+  font: 700 12px/1.2 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+}
+
+.wallpaper-remove {
+  min-height: 34px;
+  margin-top: 2px;
+  color: #7c2c2f;
+  background: transparent;
+}
+
+.wallpaper-name {
+  max-width: 100%;
+  overflow: hidden;
+  color: #7b6750;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fix clipped round close button shown in the fourth screenshot. */
+.overlay .modal-sheet {
+  position: relative;
+}
+
+.overlay .modal-close {
+  top: 14px !important;
+  right: 14px !important;
+  transform: none !important;
+  z-index: 20;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+/* Cloud pill no longer sits inside the text flow. */
+.cloud-status {
+  max-width: calc(100vw - 32px);
+}
+
+/* Desktop optimization and restrained layout. */
+@media (min-width: 1100px) {
+  .main-stage #app {
+    width: min(100%, 1380px);
+    margin-inline: auto;
+  }
+
+  .parties-page .campaign-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px;
+  }
+
+  .parties-page .campaign-card,
+  .parties-page .new-campaign {
+    content-visibility: auto;
+    contain-intrinsic-size: 620px 620px;
+  }
+
+  .parties-page .campaign-cover {
+    aspect-ratio: 16 / 8.4;
+  }
+
+  .detail-page {
+    width: min(100%, 1100px);
+    margin-inline: auto;
+  }
+
+  .detail-page .detail-banner {
+    aspect-ratio: 21 / 7.5;
+    max-height: 420px;
+  }
+
+  .detail-page .detail-title h1 {
+    max-width: 13ch;
+  }
+
+  .detail-page .session-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 480px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .parties-page .campaign-list {
+    grid-template-columns: repeat(2, minmax(480px, 1fr));
+  }
+}
+
+/* iPhone/mobile corrections from screenshots. */
+@media (max-width: 760px) {
+  .main-stage {
+    padding-bottom: calc(var(--party-bottom-nav) + 58px + var(--party-safe-bottom));
+  }
+
+  .detail-page {
+    padding-top: calc(22px + var(--party-safe-top)) !important;
+    padding-bottom: calc(126px + var(--party-safe-bottom)) !important;
+  }
+
+  .detail-page .back-link {
+    min-height: 46px;
+    margin: 0 0 15px;
+    padding: 7px 2px;
+    font-size: 16px;
+  }
+
+  .detail-page .detail-banner {
+    margin-top: 0;
+    border-radius: 14px;
+    aspect-ratio: 16 / 8.8;
+  }
+
+  .detail-page .detail-title {
+    gap: 10px;
+    padding-top: 18px;
+  }
+
+  .detail-page .detail-title h1 {
+    font-size: clamp(48px, 13.2vw, 64px);
+    line-height: .90;
+  }
+
+  .detail-page .detail-title .text-action {
+    min-height: 44px;
+  }
+
+  .detail-page .campaign-meta.large {
+    gap: 8px 14px;
+    margin: 11px 0 17px;
+    padding: 10px 0;
+    font-size: 12px;
+  }
+
+  .detail-page > .journal-section:not([data-section]) {
+    margin-top: 12px;
+    padding-top: 16px;
+  }
+
+  .detail-page > .journal-section:not([data-section]) > header h2 {
+    font-size: clamp(38px, 10.5vw, 50px);
+  }
+
+  .parties-page .new-campaign {
+    min-height: 0;
+    grid-template-columns: 62px minmax(0,1fr);
+    gap: 13px;
+    align-items: center;
+    padding: 16px 15px 15px;
+    border-radius: 14px;
+  }
+
+  .parties-page .new-campaign .compass-plus {
+    width: 58px;
+    height: 58px;
+  }
+
+  .parties-page .new-campaign .compass-plus span {
+    font-size: 30px;
+  }
+
+  .parties-page .new-campaign h2 {
+    font-size: clamp(29px, 8.4vw, 38px);
+    line-height: .94;
+  }
+
+  .parties-page .new-campaign p {
+    margin: 3px 0 10px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .parties-page .new-campaign .cta {
+    min-height: 48px;
+    font-size: 13px;
+  }
+
+  .cloud-status {
+    left: 50% !important;
+    right: auto !important;
+    bottom: calc(var(--party-bottom-nav) + 10px + var(--party-safe-bottom)) !important;
+    transform: translateX(-50%) !important;
+    z-index: 50;
+    min-height: 42px;
+    padding-inline: 15px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .overlay {
+    padding: max(8px, var(--party-safe-top)) 7px max(8px, var(--party-safe-bottom));
+    overflow-y: auto;
+  }
+
+  .overlay .modal-sheet {
+    width: min(100%, 680px);
+    max-height: none;
+    margin: 0 auto;
+    padding-top: 72px !important;
+    overflow: visible;
+  }
+
+  .overlay .record-form {
+    overflow: visible;
+  }
+
+  .overlay .modal-close {
+    top: 12px !important;
+    right: 12px !important;
+    width: 50px;
+    height: 50px;
+  }
+
+  .wallpaper-upload-card {
+    grid-template-columns: 94px minmax(0,1fr);
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .wallpaper-preview {
+    height: 96px;
+  }
+
+  .wallpaper-upload-copy strong {
+    font-size: 20px;
+  }
+
+  .wallpaper-upload-copy > span {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .wallpaper-trigger {
+    min-height: 36px;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 390px) {
+  .parties-page .new-campaign {
+    grid-template-columns: 52px minmax(0,1fr);
+    gap: 10px;
+  }
+
+  .parties-page .new-campaign .compass-plus {
+    width: 50px;
+    height: 50px;
+  }
+
+  .wallpaper-upload-card {
+    grid-template-columns: 82px minmax(0,1fr);
+  }
+
+  .wallpaper-preview {
+    height: 88px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parties-page .campaign-card,
+  .parties-page .cta,
+  .wallpaper-trigger,
+  .wallpaper-remove {
+    transition: none !important;
+  }
+}
