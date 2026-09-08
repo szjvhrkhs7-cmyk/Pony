@@ -1,4 +1,4 @@
-const CACHE_NAME = "seeker-chronicles-v17-reference-ui";
+const CACHE_NAME = "seeker-chronicles-v18-reference-ui";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const APP_SHELL = [
   "./notebook/book.css",
   "./notebook/refinement.css",
   "./notebook/reference-v3.css",
+  "./notebook/reference-v3-hotfix.css",
   "./notebook/ui-enhancements.mjs",
   "./manifest.webmanifest",
   "./assets/d20.svg",
