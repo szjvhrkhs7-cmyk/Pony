@@ -1,5 +1,0 @@
-/* Mobile rules are consolidated in reference-match.css so desktop and iPhone share one visual system. */
-@media (max-width:700px){
-  html,body{width:100%;max-width:100%;overflow-x:hidden}
-  input,textarea,select,[contenteditable=true]{font-size:16px}
-}
