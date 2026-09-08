@@ -3,11 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
-    "check": "node --check notebook/app.mjs && node --check notebook/cloud.mjs && node --check notebook/db.mjs && node --check service-worker.js"
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check:dist": "node --check dist/app.js && node --check dist/db.js && node --check dist/model.js && node --check dist/cloud.js && node --check service-worker.js"
   },
   "devDependencies": {
-    "fake-indexeddb": "6.2.4",
-    "linkedom": "0.18.12"
+    "typescript": "^5.9.2"
   }
 }
