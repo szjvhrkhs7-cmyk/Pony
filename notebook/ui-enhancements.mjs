@@ -77,6 +77,7 @@ function replaceLeadingLabelText(label, caption, icon) {
 function enhanceCharacterForm(form) {
   if (form.dataset.characterEnhanced) return;
   form.dataset.characterEnhanced = "true";
+  dialog.classList.remove("party-dialog", "session-dialog");
   dialog.classList.add("character-dialog");
 
   if (!dialog.querySelector(".dialog-crest")) {
@@ -172,8 +173,9 @@ function enhanceGenericDialog(form) {
   form.dataset.genericEnhanced = "true";
   const hasParty = form.elements.namedItem("players_count");
   const hasSession = form.elements.namedItem("location");
-  dialog.classList.toggle("party-dialog", Boolean(hasParty));
-  dialog.classList.toggle("session-dialog", Boolean(hasSession));
+  dialog.classList.remove("character-dialog", "party-dialog", "session-dialog");
+  if (hasParty) dialog.classList.add("party-dialog");
+  if (hasSession) dialog.classList.add("session-dialog");
 
   const upload = form.querySelector('input[type="file"][name="image"]');
   const uploadLabel = upload?.closest("label.field");
