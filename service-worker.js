@@ -1,4 +1,4 @@
-const CACHE_NAME = "seeker-chronicles-v14-local-first";
+const CACHE_NAME = "seeker-chronicles-v15-refined-book";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./notebook/cloud.mjs",
   "./notebook/text.mjs",
   "./notebook/book.css",
+  "./notebook/refinement.css",
   "./manifest.webmanifest",
   "./assets/d20.svg",
   "./assets/icon-192.png",
