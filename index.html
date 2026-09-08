@@ -9,6 +9,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./assets/d20.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./dist/editor-modern.js"></script>
   <script type="module" src="./dist/app.js"></script>
 </head>
 <body>
@@ -19,9 +20,9 @@
         <strong>Хроники<br>Искателя</strong>
         <small>Ваши истории живут дольше</small>
       </a>
-      <nav class="side-nav">
-        <a href="#parties" data-nav="parties"><span>♟♟</span>Партии</a>
-        <a href="#character" data-nav="character"><span>♟</span>Персонаж</a>
+      <nav class="side-nav" aria-label="Основная навигация">
+        <a href="#parties" data-nav="parties"><span aria-hidden="true">♟♟</span>Партии</a>
+        <a href="#character" data-nav="character"><span aria-hidden="true">♟</span>Персонаж</a>
       </nav>
       <div class="spine-mark" aria-hidden="true">✧</div>
       <p class="spine-quote">В каждой партии<br>рождается своя легенда</p>
@@ -29,8 +30,8 @@
     <section class="main-stage"><div id="app"></div></section>
   </div>
   <nav class="bottom-nav" aria-label="Основная навигация">
-    <a href="#parties" data-nav="parties"><span>♟♟</span>Партии</a>
-    <a href="#character" data-nav="character"><span>♟</span>Персонаж</a>
+    <a href="#parties" data-nav="parties"><span aria-hidden="true">♟♟</span>Партии</a>
+    <a href="#character" data-nav="character"><span aria-hidden="true">♟</span>Персонаж</a>
   </nav>
   <button id="cloud-status" class="cloud-status" data-action="cloud" type="button">○ Только на устройстве</button>
   <div id="overlay" class="overlay"></div>
