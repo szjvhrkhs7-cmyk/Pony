@@ -1,4 +1,4 @@
-const CACHE_NAME = "seeker-chronicles-v15-refined-book";
+const CACHE_NAME = "seeker-chronicles-v16-reference-ui";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,12 +9,16 @@ const APP_SHELL = [
   "./notebook/text.mjs",
   "./notebook/book.css",
   "./notebook/refinement.css",
+  "./notebook/reference-v3.css",
+  "./notebook/ui-enhancements.mjs",
   "./manifest.webmanifest",
   "./assets/d20.svg",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
   "./assets/aged-paper.webp",
   "./assets/adventurer-desk.webp",
+  "./assets/map-sketch.svg",
+  "./assets/strada-default.svg",
   ...["400", "500", "600", "700"].map(
     (w) => `./assets/fonts/garamond-${w}.ttf`,
   ),
