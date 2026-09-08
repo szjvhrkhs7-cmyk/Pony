@@ -1,26 +1,14 @@
 {
   "name": "Хроники Искателя",
   "short_name": "Хроники",
-  "description": "Личный D&D-журнал игрока",
-  "id": "./",
+  "description": "Личный D&D-журнал: партии, персонаж и истории приключений.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#E7D3A7",
-  "theme_color": "#18231D",
-  "lang": "ru",
+  "background_color": "#10231c",
+  "theme_color": "#10231c",
   "icons": [
-    {
-      "src": "./assets/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./assets/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
+    {"src":"./assets/icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"./assets/icon-512.png","sizes":"512x512","type":"image/png"}
   ]
 }

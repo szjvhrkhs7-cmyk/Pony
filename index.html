@@ -1,60 +1,39 @@
 <!doctype html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover"
-    />
-    <meta name="theme-color" content="#18231D" />
-    <meta
-      name="description"
-      content="Личный D&D-журнал: партии, персонаж и истории ваших приключений. Работает без интернета."
-    />
-    <title>Хроники Искателя</title>
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="icon" href="./assets/d20.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./notebook/book.css" />
-    <link rel="stylesheet" href="./notebook/refinement.css" />
-    <link rel="stylesheet" href="./notebook/reference-v3.css" />
-    <link rel="stylesheet" href="./notebook/reference-v3-hotfix.css" />
-    <script type="module" src="./notebook/app.mjs"></script>
-    <script type="module" src="./notebook/ui-enhancements.mjs"></script>
-  </head>
-  <body>
-    <div class="folio">
-      <aside class="binding">
-        <a class="brand" href="#parties"
-          ><img src="./assets/d20.svg" alt="" width="86" height="86" /><strong
-            >Хроники<br />Искателя</strong
-          ><span>Ваши истории живут дольше</span></a
-        >
-        <nav aria-label="Основная навигация">
-          <a href="#parties" data-nav="parties"
-            ><span aria-hidden="true">♟♟</span>Партии</a
-          ><a href="#character" data-nav="character"
-            ><span aria-hidden="true">♟</span>Персонаж</a
-          >
-        </nav>
-        <div class="binding-mark" aria-hidden="true">✧</div>
-        <p class="inscription">В каждой партии<br />рождается своя легенда</p>
-      </aside>
-      <main id="page" class="paper" tabindex="-1">
-        <p role="status">Открываем журнал…</p>
-      </main>
-    </div>
-    <button
-      id="cloud-status"
-      class="cloud-status"
-      aria-label="Облачная синхронизация"
-      type="button"
-    >
-      ○ Только на устройстве
-    </button>
-    <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
-    <div id="toast" class="toast" role="status" hidden></div>
-    <noscript
-      >Для открытия журнала включите JavaScript в настройках браузера.</noscript
-    >
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#10231c">
+  <meta name="description" content="Хроники Искателя — личный D&D-журнал для партий и персонажей.">
+  <title>Хроники Искателя</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/d20.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./dist/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="book-spine" aria-label="Навигация журнала">
+      <a class="brand" href="#parties">
+        <span class="brand-medallion"><img src="./assets/dragon-crest.svg" alt=""></span>
+        <strong>Хроники<br>Искателя</strong>
+        <small>Ваши истории живут дольше</small>
+      </a>
+      <nav class="side-nav">
+        <a href="#parties" data-nav="parties"><span>♟♟</span>Партии</a>
+        <a href="#character" data-nav="character"><span>♟</span>Персонаж</a>
+      </nav>
+      <div class="spine-mark" aria-hidden="true">✧</div>
+      <p class="spine-quote">В каждой партии<br>рождается своя легенда</p>
+    </aside>
+    <section class="main-stage"><div id="app"></div></section>
+  </div>
+  <nav class="bottom-nav" aria-label="Основная навигация">
+    <a href="#parties" data-nav="parties"><span>♟♟</span>Партии</a>
+    <a href="#character" data-nav="character"><span>♟</span>Персонаж</a>
+  </nav>
+  <button id="cloud-status" class="cloud-status" data-action="cloud" type="button">○ Только на устройстве</button>
+  <div id="overlay" class="overlay"></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
 </html>
