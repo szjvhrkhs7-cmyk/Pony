@@ -135,8 +135,10 @@ export class CloudService {
       const remote = row ? migrateLegacy(row.data) : [];
       const merged = mergeRecords(local, remote);
 
-      for (const record of merged.filter(item => item.image_id)) {
-        const imageId = String(record.image_id);
+      const mediaIds = [...new Set(merged.flatMap(record =>
+        [record.image_id, record.wallpaper_id].filter(Boolean).map(value => String(value))
+      ))];
+      for (const imageId of mediaIds) {
         let media = await this.db.get('media', imageId);
         const path = `${uid}/${imageId}.jpg`;
         if (media && media.upload_state !== 'uploaded') {
