@@ -1,29 +1,68 @@
-const CACHE_NAME = 'seeker-chronicles-v13-book-polish';
+const CACHE_NAME = "seeker-chronicles-v14-local-first";
 const APP_SHELL = [
-  './', './index.html', './styles.css?v=20260908-book-polish', './mobile.css',
-  './reference-match.css?v=20260908-book-polish', './app.js?v=20260908-book-polish',
-  './dashboard.js?v=20260908-book-polish', './local-meta.js', './sync.js',
-  './manifest.webmanifest', './assets/adventurer-desk.webp',
-  './assets/aged-paper.webp', './assets/reference-scenes.webp'
+  "./",
+  "./index.html",
+  "./notebook/app.mjs",
+  "./notebook/db.mjs",
+  "./notebook/model.mjs",
+  "./notebook/cloud.mjs",
+  "./notebook/text.mjs",
+  "./notebook/book.css",
+  "./manifest.webmanifest",
+  "./assets/d20.svg",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png",
+  "./assets/aged-paper.webp",
+  "./assets/adventurer-desk.webp",
+  ...["400", "500", "600", "700"].map(
+    (w) => `./assets/fonts/garamond-${w}.ttf`,
+  ),
 ];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)),
+  );
   self.skipWaiting();
 });
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(
-    keys.filter(key => key.startsWith('seeker-chronicles-') && key !== CACHE_NAME).map(key => caches.delete(key))
-  )).then(() => self.clients.claim()));
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (k) => k.startsWith("seeker-chronicles-") && k !== CACHE_NAME,
+            )
+            .map((k) => caches.delete(k)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
 });
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(fetch(event.request).then(response => {
-    if (response.ok) { const copy = response.clone(); event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy))); }
-    return response;
-  }).catch(async () => {
-    const cached = await caches.match(event.request);
-    if (cached) return cached;
-    if (event.request.mode === 'navigate') return (await caches.match('./index.html')) || Response.error();
-    return Response.error();
-  }));
+self.addEventListener("fetch", (event) => {
+  const req = event.request,
+    url = new URL(req.url);
+  if (req.method !== "GET" || url.origin !== self.location.origin) return;
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(req)
+        .then((response) =>
+          response.ok ? response : caches.match("./index.html"),
+        )
+        .catch(() => caches.match("./index.html")),
+    );
+    return;
+  }
+  if (
+    !APP_SHELL.some(
+      (path) => new URL(path, self.registration.scope).href === url.href,
+    )
+  )
+    return;
+  event.respondWith(
+    caches
+      .open(CACHE_NAME)
+      .then(async (cache) => (await cache.match(req)) || fetch(req)),
+  );
 });
