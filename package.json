@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "check:dist": "node --check dist/editor-modern.js && node --check dist/party-ui.js && node --check dist/character-ui.js && node --check dist/app.js && node --check dist/db.js && node --check dist/model.js && node --check dist/cloud.js && node --check service-worker.js"
+    "check:dist": "node --check dist/editor-modern.js && node --check dist/party-ui.js && node --check dist/party-repair.js && node --check dist/character-ui.js && node --check dist/app.js && node --check dist/db.js && node --check dist/model.js && node --check dist/cloud.js && node --check service-worker.js"
   },
   "devDependencies": {
     "typescript": "^5.9.2"
