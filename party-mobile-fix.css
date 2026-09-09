@@ -1,0 +1,101 @@
+/* Final screenshot-driven mobile fix for the Parties screen. */
+@media (max-width: 760px) {
+  /* New party card: cancel legacy negative-width CTA hack and align all content. */
+  .parties-page .new-campaign {
+    min-height: 0 !important;
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    gap: 16px !important;
+    align-items: center !important;
+    padding: 20px 18px !important;
+  }
+
+  .parties-page .new-campaign > div:last-child {
+    min-width: 0;
+    align-self: center;
+  }
+
+  .parties-page .new-campaign .compass-plus {
+    width: 64px !important;
+    height: 64px !important;
+    margin: 0 auto !important;
+  }
+
+  .parties-page .new-campaign h2 {
+    margin: 0 0 5px !important;
+    font-size: clamp(30px, 8.6vw, 38px) !important;
+    line-height: .98 !important;
+    text-align: left;
+  }
+
+  .parties-page .new-campaign p {
+    margin: 0 !important;
+    max-width: 31ch;
+    font-size: 15px !important;
+    line-height: 1.32 !important;
+  }
+
+  .parties-page .new-campaign .cta {
+    grid-column: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+    margin: 12px 0 0 !important;
+    padding-inline: 40px !important;
+    font-size: 14px !important;
+  }
+
+  /* The empty-state page should end after its content instead of creating a giant blank sheet. */
+  @supports selector(body:has(*)) {
+    body:has(.parties-page .campaign-list > .new-campaign:only-child) .app-shell,
+    body:has(.parties-page .campaign-list > .new-campaign:only-child) .main-stage,
+    body:has(.parties-page .campaign-list > .new-campaign:only-child) .parties-page {
+      min-height: 0 !important;
+    }
+
+    body:has(.parties-page .campaign-list > .new-campaign:only-child) .parties-page {
+      padding-bottom: 24px !important;
+    }
+
+    body:has(.parties-page .campaign-list > .new-campaign:only-child) .cloud-status {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      display: flex;
+      width: max-content;
+      max-width: calc(100% - 28px);
+      margin: 12px auto 10px !important;
+      z-index: 3;
+    }
+
+    body:has(.parties-page .campaign-list > .new-campaign:only-child) .bottom-nav {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      z-index: 3;
+    }
+  }
+}
+
+@media (max-width: 390px) {
+  .parties-page .new-campaign {
+    grid-template-columns: 60px minmax(0, 1fr) !important;
+    gap: 12px !important;
+    padding: 17px 14px !important;
+  }
+
+  .parties-page .new-campaign .compass-plus {
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  .parties-page .new-campaign h2 {
+    font-size: 30px !important;
+  }
+
+  .parties-page .new-campaign p {
+    font-size: 14px !important;
+  }
+}
