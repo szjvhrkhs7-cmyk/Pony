@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="./party-polish.css">
   <link rel="stylesheet" href="./party-final.css">
   <link rel="stylesheet" href="./party-repair.css">
+  <link rel="stylesheet" href="./party-mobile-fix.css">
   <link rel="stylesheet" href="./character-polish.css">
   <link rel="stylesheet" href="./character-final.css">
   <script type="module" src="./dist/editor-modern.js"></script>
@@ -37,11 +38,11 @@
     </aside>
     <section class="main-stage"><div id="app"></div></section>
   </div>
+  <button id="cloud-status" class="cloud-status" data-action="cloud" type="button">○ Только на устройстве</button>
   <nav class="bottom-nav" aria-label="Основная навигация">
     <a href="#parties" data-nav="parties"><span aria-hidden="true">♜</span>Партии</a>
     <a href="#character" data-nav="character"><span aria-hidden="true">♞</span>Персонаж</a>
   </nav>
-  <button id="cloud-status" class="cloud-status" data-action="cloud" type="button">○ Только на устройстве</button>
   <div id="overlay" class="overlay"></div>
   <div id="toast" class="toast" role="status" hidden></div>
 </body>
